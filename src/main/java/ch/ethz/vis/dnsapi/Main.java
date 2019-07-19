@@ -2,10 +2,13 @@ package ch.ethz.vis.dnsapi;
 
 import ch.ethz.vis.dnsapi.netcenter.ARecordManager;
 import ch.ethz.vis.dnsapi.netcenter.CNameRecordManager;
+import ch.ethz.vis.dnsapi.netcenter.TxtRecordManager;
 import ch.ethz.vis.dnsapi.netcenter.types.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.converter.jaxb.JaxbConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
@@ -25,7 +28,7 @@ public class Main {
                     .authenticator(new Authenticator() {
                         @Override
                         public Request authenticate(Route route, okhttp3.Response response) throws IOException {
-                            String credentials = Credentials.basic("bfiedler", "definitelynotmypassword");
+                            String credentials = Credentials.basic("bfiedler", "got you again!");
                             return response.request().newBuilder().header("Authorization", credentials).build();
                         }
                     })
@@ -38,9 +41,11 @@ public class Main {
                     .baseUrl("https://www.netcenter.ethz.ch/netcenter/rest/")
                     .addConverterFactory(JaxbConverterFactory.create(context))
                     .addConverterFactory(ScalarsConverterFactory.create())
+                    .addConverterFactory(JacksonConverterFactory.create())
                     .build();
             ARecordManager arm = retrofit.create(ARecordManager.class);
             CNameRecordManager crm = retrofit.create(CNameRecordManager.class);
+            TxtRecordManager trm = retrofit.create(TxtRecordManager.class);
 
             List<String> testviews = new LinkedList<>();
             testviews.add("intern");
@@ -85,13 +90,32 @@ public class Main {
             System.out.println(r.code());
             JAXB.marshal(s.body(), System.out);
 
-            Response<String> resp3 = crm.CreateCNameRecord(new CreateCNameRecordRequest(testcName)).execute();
-            System.out.println(resp3.code());
-            System.out.println(resp3.body());
+            //Response<String> resp3 = crm.CreateCNameRecord(new CreateCNameRecordRequest(testcName)).execute();
+            //System.out.println(resp3.code());
+            //System.out.println(resp3.body());
 
-            Response<String> resp4 = crm.DeleteCNameRecord("test-netcenter-api-cname.vis.ethz.ch").execute();
-            System.out.println(resp4.code());
-            System.out.println(resp4.body());
+            //Response<String> resp4 = crm.DeleteCNameRecord("test-netcenter-api-cname.vis.ethz.ch").execute();
+            //System.out.println(resp4.code());
+            //System.out.println(resp4.body());
+
+            TxtRecord txtRecord = new TxtRecord();
+            txtRecord.setValue("some-text-in-the-txt-record");
+            txtRecord.setTxtName("test-netcenter-api-txt");
+            txtRecord.setSubdomain("vis.ethz.ch");
+            txtRecord.setIsgGroup("adm-vis");
+            txtRecord.setRemark("Testing of automatic txt creation");
+            txtRecord.setTtl(123);
+            txtRecord.setViews(testviews);
+
+            // Created id: 3837856
+            ObjectMapper om = new ObjectMapper();
+            Response<String> resp = trm.CreateTxtRecord(txtRecord).execute();
+            System.out.println(resp.code());
+            System.out.println(resp.body());
+
+
+
+
         } catch (JAXBException e) {
             System.out.println("JAXB error: " + e);
         } catch (IOException e) {
