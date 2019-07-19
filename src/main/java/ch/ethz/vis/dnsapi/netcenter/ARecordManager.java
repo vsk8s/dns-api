@@ -1,24 +1,22 @@
 package ch.ethz.vis.dnsapi.netcenter;
 
+import ch.ethz.vis.dnsapi.netcenter.types.CreateARecordRequest;
+import ch.ethz.vis.dnsapi.netcenter.types.GetARecordResponse;
+import ch.ethz.vis.dnsapi.netcenter.types.NetcenterResponse;
 import retrofit2.Call;
-import retrofit2.Response;
-import retrofit2.http.GET;
-import retrofit2.http.POST;
-import retrofit2.http.Path;
+import retrofit2.http.*;
 
-import java.net.Inet4Address;
-
-public class ARecordManager {
-
+// FIXME: This can actually map both A and AAAA records. Rename appropriately
+public interface ARecordManager {
     @POST("nameToIP")
-    public Call<SuccessResponse> CreateARecord(String src, Inet4Address dest) {
-        return null;
-    }
+    Call<String> CreateARecord(@Body CreateARecordRequest createARecordRequest);
 
-    //@GET("nameToIP/fqName/{name}")
-    //public Call<ARecord> GetARecord(@Path("name") String src);
+    @GET("nameToIP/fqName/{name}")
+    Call<GetARecordResponse> GetARecord(@Path("name") String name);
 
-    public void DeleteARecord() {
+    @DELETE("nameToIP/{ipv4}")
+    Call<String> DeleteARecord(@Path("ipv4") String ipv4);
 
-    }
+    @DELETE("nameToIP/{ipv4}/{fqdn}")
+    Call<String> DeleteARecord(@Path("ipv4") String ipv4, @Path("fqdn") String fqdn);
 }

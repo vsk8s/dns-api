@@ -2,19 +2,22 @@ package ch.ethz.vis.dnsapi.netcenter.types;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.awt.desktop.AppReopenedEvent;
+import java.util.List;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement(name = "usedIps")
-public class GetARecordRequest {
-    private ARecord aRecord;
+public class GetARecordResponse {
+    @XmlElement(name = "usedIp")
+    private List<ARecord> records;
 
-    public ARecord getaRecord() {
-        return aRecord;
+    public List<ARecord> getRecords() {
+        return records;
     }
 
-    public void setaRecord(ARecord aRecord) {
-        this.aRecord = aRecord;
+    private void setRecords(List<ARecord> records) {
+        this.records = records;
     }
 }
