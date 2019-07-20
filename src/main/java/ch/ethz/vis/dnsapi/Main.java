@@ -16,7 +16,6 @@ import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -44,7 +43,7 @@ public class Main {
                     .build();
 
             JAXBContext context = JAXBContext.newInstance(CreateARecordRequest.class, GetARecordResponse.class,
-                    NetcenterResponse.class, GetCNameRecordResponse.class, CreateCNameRecordRequest.class);
+                    GetCNameRecordResponse.class, CreateCNameRecordRequest.class, XmlError.class);
             Retrofit retrofit = new Retrofit.Builder()
                     .client(client)
                     .baseUrl("https://www.netcenter.ethz.ch/netcenter/rest/")
@@ -130,9 +129,9 @@ public class Main {
             System.out.println(resp2.code());
             System.out.println(om.writerWithDefaultPrettyPrinter().writeValueAsString(resp2.body()));
 
-            Response<String> resp3 = trm.DeleteTxtRecord(txtRecord1.getId()).execute();
+            Response<JsonResponse> resp3 = trm.DeleteTxtRecord(txtRecord1.getId()).execute();
             System.out.println(resp3.code());
-            System.out.println(resp3.body());
+            System.out.println(om.writerWithDefaultPrettyPrinter().writeValueAsString(resp3.body()));
         } catch (JAXBException e) {
             System.out.println("JAXB error: " + e);
         } catch (IOException e) {
@@ -167,13 +166,16 @@ public class Main {
             JAXBContext context = JAXBContext.newInstance(GetARecordResponse.class);
             Unmarshaller u = context.createUnmarshaller();
 
-            GetARecordResponse resp = (GetARecordResponse)u.unmarshal(new StringReader(test));
+            Object resp = u.unmarshal(new StringReader(test));
 
-            if (resp != null) {
-                System.out.println(resp.getRecords().get(0).getIp() + " " + resp.getRecords().get(0).getIsgGroup());
+            if (resp instanceof GetARecordResponse) {
+                GetARecordResponse a = (GetARecordResponse)resp;
+                System.out.println(a.getRecords().get(0).getIp() + " " + a.getRecords().get(0).getIsgGroup());
 
-                CreateARecordRequest createARecordRequest = new CreateARecordRequest(resp.getRecords().get(0));
+                CreateARecordRequest createARecordRequest = new CreateARecordRequest(a.getRecords().get(0));
                 JAXB.marshal(createARecordRequest, System.out);
+            } else {
+                System.out.println("resp was null!");
             }
         } catch (JAXBException e) {
             System.out.println("Some JAXB error: " + e);

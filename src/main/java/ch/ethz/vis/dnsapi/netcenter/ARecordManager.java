@@ -2,7 +2,6 @@ package ch.ethz.vis.dnsapi.netcenter;
 
 import ch.ethz.vis.dnsapi.netcenter.types.CreateARecordRequest;
 import ch.ethz.vis.dnsapi.netcenter.types.GetARecordResponse;
-import ch.ethz.vis.dnsapi.netcenter.types.NetcenterResponse;
 import retrofit2.Call;
 import retrofit2.http.*;
 

@@ -30,6 +30,10 @@ public class Config {
             LOGGER.error("Username, password and isgGroup must be provided!");
             throw new InitializationException("Username, password or isgGroup not set");
         }
+
+        LOGGER.debug("Username: " + username);
+        LOGGER.debug("Password: " + "*".repeat(password.length()));
+        LOGGER.debug("ISG Group: " + isgGroup);
     }
 
     public String getUsername() {

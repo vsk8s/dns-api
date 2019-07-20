@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+message RecordOptions {
+    int32 ttl = 1; // optional, default 600s
+    string isgGroup = 2; // optional
+}
+
+message CreateARecordRequest {
+    string ip = 1;  // required
+    string hostname = 2; // required
+    RecordOptions options = 3; // optional
+}
+
+message DeleteARecordRequest {
+    string ip = 1; // required
+    string hostname = 2; // required
+}
+
+message CreateCNameRecordRequest {
+    string src = 1; // required
+    string dest = 2; // required
+    RecordOptions options = 3; // optional
+}
+
+message DeleteCNameRecordRequest {
+    string src = 1;
+    string dest = 2;
+}
+
+message CreateTxtRecordRequest {
+    string value = 1; // required
+    string hostname = 2; // required
+    RecordOptions options = 3; // optional
+}
+
+message DeleteTxtRecordRequest {
+    string value = 1; // required
+    string hostname = 2; // required
+}
+
+message Response {
+    string errorMessage = 1; // unset if successful
+}
+
+service DnsApi {
+    rpc CreateARecord (CreateARecordRequest) returns (Response);
+    rpc DeleteARecord (DeleteARecordRequest) returns (Response);
+
+    rpc CreateCNameRecord (CreateCNameRecordRequest) returns (Response);
+    rpc DeleteCNameRecord (DeleteCNameRecordRequest) returns (Response);
+
+    rpc CreateTxtRecord (CreateTxtRecordRequest) returns (Response);
+    rpc DeleteTxtRecord (DeleteTxtRecordRequest) returns (Response);
+}
