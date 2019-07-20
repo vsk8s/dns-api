@@ -2,7 +2,7 @@ syntax = "proto3";
 
 message RecordOptions {
     int32 ttl = 1; // optional, default 600s
-    string isgGroup = 2; // optional
+    string isgGroup = 2; // optional, default configured in dnsapi.properties
 }
 
 message CreateARecordRequest {
