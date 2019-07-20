@@ -5,7 +5,6 @@ import ch.ethz.vis.dnsapi.netcenter.types.GetCNameRecordResponse;
 import retrofit2.Call;
 import retrofit2.http.*;
 
-// FIXME: This can actually map both A and AAAA records. Rename appropriately
 public interface CNameRecordManager {
     @POST("alias")
     Call<String> CreateCNameRecord(@Body CreateCNameRecordRequest createcNameRecordRequest);

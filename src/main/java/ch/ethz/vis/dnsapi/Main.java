@@ -16,19 +16,28 @@ import javax.xml.bind.JAXB;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 public class Main {
     public static void main(String[] args) {
         try {
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            Properties p = new Properties();
+            InputStream is = loader.getResourceAsStream("dnsapi.properties");
+            p.load(is);
+            Config c = new Config(p);
+
             OkHttpClient client = new OkHttpClient.Builder()
                     .authenticator(new Authenticator() {
                         @Override
                         public Request authenticate(Route route, okhttp3.Response response) throws IOException {
-                            String credentials = Credentials.basic("bfiedler", "got you again!");
+                            String credentials = Credentials.basic(c.getUsername(), c.getPassword());
                             return response.request().newBuilder().header("Authorization", credentials).build();
                         }
                     })
@@ -107,19 +116,29 @@ public class Main {
             txtRecord.setTtl(123);
             txtRecord.setViews(testviews);
 
-            // Created id: 3837856
             ObjectMapper om = new ObjectMapper();
-            Response<String> resp = trm.CreateTxtRecord(txtRecord).execute();
+            Response<TxtResponse> resp = trm.CreateTxtRecord(txtRecord).execute();
             System.out.println(resp.code());
-            System.out.println(resp.body());
+            System.out.println(om.writerWithDefaultPrettyPrinter().writeValueAsString(resp.body()));
 
+            if (resp.body().getError() != null) {
+                throw new Exception("aaa");
+            }
+            TxtRecord txtRecord1 = resp.body().getTxtRecord();
 
+            Response<TxtResponse> resp2 = trm.GetTxtRecord(txtRecord1.getId()).execute();
+            System.out.println(resp2.code());
+            System.out.println(om.writerWithDefaultPrettyPrinter().writeValueAsString(resp2.body()));
 
-
+            Response<String> resp3 = trm.DeleteTxtRecord(txtRecord1.getId()).execute();
+            System.out.println(resp3.code());
+            System.out.println(resp3.body());
         } catch (JAXBException e) {
             System.out.println("JAXB error: " + e);
         } catch (IOException e) {
             System.out.println("IOException: " + e);
+        } catch (Exception e) {
+            System.out.println("Exception: " + e);
         }
 
         //testXML();

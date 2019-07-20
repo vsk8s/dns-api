@@ -11,12 +11,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import java.util.List;
 
-@JsonIgnoreProperties("errors")
 public class TxtRecord {
     @JsonProperty("id")
     private String id;
 
-    // When using GET requests, the API gives you "value", but when setting new records you have to use "txtValue".
+    // When using GET requests, the API gives you "value", but when
+    // creating new records via POST you have to use "txtValue".
     @JsonProperty("txtValue")
     @JsonAlias({"value"})
     private String value;

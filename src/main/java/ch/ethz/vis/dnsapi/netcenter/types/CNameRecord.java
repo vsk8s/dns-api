@@ -8,16 +8,16 @@ import java.util.List;
 
 @XmlAccessorType(XmlAccessType.NONE)
 public class CNameRecord {
-    // The FQDN (new) alias you are trying to create.
+    // The FQDN (new) alias created.
     @XmlElement(name = "fqName")
     private String src;
 
-    // The destiantion (old) hostname which already exists.
+    // The destination (old) hostname which already exists.
     @XmlElement(name = "hostName")
     private String dest;
 
     // This field is unfortunately called "name" in the netcenter.
-    // aliasName + subdomain = hostName, however in order to create new records, we have to set aliasName + subdomain
+    // aliasName + subdomain = fqName, however in order to create new records, we have to set aliasName + subdomain
     @XmlElement(name = "name")
     private String aliasName;
 
