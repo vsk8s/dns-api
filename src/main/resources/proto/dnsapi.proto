@@ -38,9 +38,7 @@ message DeleteTxtRecordRequest {
     string hostname = 2; // required
 }
 
-message Response {
-    string errorMessage = 1; // unset if successful
-}
+message Response { }
 
 service DnsApi {
     rpc CreateARecord (CreateARecordRequest) returns (Response);
