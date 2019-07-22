@@ -92,7 +92,7 @@ public class Main {
             testcName.setRemark("generated automatically");
             testcName.setViews(testviews);
 
-            //Response<GetARecordResponse> r = arm.GetARecord("compute000000.vis.ethz.ch").execute();
+            //Response<GetARecordResponse> r = arm.GetARecord("compute0.vis.ethz.ch").execute();
             //System.out.println(r.code());
             //System.out.println("Successful call to get ip!");
             //JAXB.marshal(r.body(), System.out);
@@ -100,7 +100,7 @@ public class Main {
             //System.out.println("Request:");
             //JAXB.marshal(new CreateARecordRequest(testRecord), System.out);
 
-            Response<String> resp = arm.CreateARecord(new CreateARecordRequest(testRecord)).execute();
+            Response<XmlSuccess> resp = arm.CreateARecord(new CreateARecordRequest(testRecord)).execute();
             System.out.println(resp.code());
             System.out.println(resp.errorBody().string());
 
@@ -153,8 +153,6 @@ public class Main {
         } catch (Exception e) {
             System.out.println("Exception: " + e);
         }
-
-        //testXML();
     }
 
     public static void testXML() {
