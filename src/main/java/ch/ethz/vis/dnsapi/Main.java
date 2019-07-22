@@ -134,7 +134,7 @@ public class Main {
             //System.out.println(resp.code());
             //System.out.println(om.writerWithDefaultPrettyPrinter().writeValueAsString(resp.body()));
 
-            //if (resp.body().getError() != null) {
+            //if (resp.body().getErrors() != null) {
             //    throw new Exception("aaa");
             //}
             //TxtRecord txtRecord1 = resp.body().getTxtRecord();

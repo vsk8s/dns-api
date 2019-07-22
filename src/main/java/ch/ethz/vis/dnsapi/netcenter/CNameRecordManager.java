@@ -2,16 +2,17 @@ package ch.ethz.vis.dnsapi.netcenter;
 
 import ch.ethz.vis.dnsapi.netcenter.types.CreateCNameRecordRequest;
 import ch.ethz.vis.dnsapi.netcenter.types.GetCNameRecordResponse;
+import ch.ethz.vis.dnsapi.netcenter.types.XmlSuccess;
 import retrofit2.Call;
 import retrofit2.http.*;
 
 public interface CNameRecordManager {
     @POST("alias")
-    Call<String> CreateCNameRecord(@Body CreateCNameRecordRequest createcNameRecordRequest);
+    Call<XmlSuccess> CreateCNameRecord(@Body CreateCNameRecordRequest createcNameRecordRequest);
 
     @GET("alias/{fqdn}")
     Call<GetCNameRecordResponse> GetCNameRecord(@Path("fqdn") String fqdn);
 
     @DELETE("alias/{fqdn}")
-    Call<String> DeleteCNameRecord(@Path("fqdn") String fqdn);
+    Call<XmlSuccess> DeleteCNameRecord(@Path("fqdn") String fqdn);
 }

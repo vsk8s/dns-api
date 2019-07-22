@@ -6,17 +6,17 @@ import java.util.List;
 
 public class JsonResponse {
     @JsonProperty(value = "errors", required = false)
-    private List<JsonError> error;
+    private List<JsonError> errors;
 
     @JsonProperty(value = "status", required = false)
     private String status;
 
-    public List<JsonError> getError() {
-        return error;
+    public List<JsonError> getErrors() {
+        return errors;
     }
 
-    private void setError(List<JsonError> error) {
-        this.error = error;
+    private void setErrors(List<JsonError> errors) {
+        this.errors = errors;
     }
 
     public String getStatus() {
