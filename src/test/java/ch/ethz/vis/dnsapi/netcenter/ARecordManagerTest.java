@@ -70,7 +70,7 @@ public class ARecordManagerTest {
         response = aRecordManager.GetARecord("doesnotexist.some.tld").execute();
         assertTrue(response.isSuccessful());
         assertNotNull(response.body());
-        //assertTrue(response.body().getRecords().isEmpty());
+        assertTrue(response.body().getRecords().isEmpty());
 
         response = aRecordManager.GetARecord("something.some.tld").execute();
         assertFalse(response.isSuccessful());
