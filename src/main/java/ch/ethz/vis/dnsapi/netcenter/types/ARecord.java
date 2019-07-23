@@ -1,9 +1,6 @@
 package ch.ethz.vis.dnsapi.netcenter.types;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.*;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.List;
 
@@ -11,6 +8,9 @@ import java.util.List;
 public class ARecord {
     @XmlElement(name = "ip")
     private String ip;
+
+    @XmlElement(name = "ipVersion")
+    private String ipVersion;
 
     @XmlElement(name = "fqname")
     private String fqName;
@@ -213,5 +213,13 @@ public class ARecord {
 
     private void setAlias(Boolean alias) {
         this.alias = alias;
+    }
+
+    public String getIpVersion() {
+        return ipVersion;
+    }
+
+    private void setIpVersion(String ipVersion) {
+        this.ipVersion = ipVersion;
     }
 }
