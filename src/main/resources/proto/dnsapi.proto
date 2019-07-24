@@ -2,7 +2,6 @@ syntax = "proto3";
 
 option java_package = "ch.ethz.vis.dnsapi.grpc";
 
-
 message RecordOptions {
     int32 ttl = 1; // optional, default 600s
     string isgGroup = 2; // optional, default configured in dnsapi.properties
@@ -43,7 +42,7 @@ message DeleteTxtRecordRequest {
 
 message Response { }
 
-service DnsApi {
+service Dns {
     rpc CreateARecord (CreateARecordRequest) returns (Response);
     rpc DeleteARecord (DeleteARecordRequest) returns (Response);
 
