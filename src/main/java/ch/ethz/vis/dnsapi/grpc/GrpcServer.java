@@ -19,8 +19,8 @@ public class GrpcServer {
     private int port;
     private String defaultIsg;
 
-    public GrpcServer(NetcenterAPI aRecordManager, String defaultIsg) {
-        this.netcenterAPI = aRecordManager;
+    public GrpcServer(NetcenterAPI netcenterAPI, String defaultIsg) {
+        this.netcenterAPI = netcenterAPI;
         this.port = 50051;
         this.defaultIsg = defaultIsg;
     }

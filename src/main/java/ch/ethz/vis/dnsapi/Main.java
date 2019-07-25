@@ -22,7 +22,7 @@ public class Main {
             p.load(is);
             Config c = new Config(p);
 
-            NetcenterAPI netcenterAPI = new NetcenterAPI(c.getUsername(), c.getPassword());
+            NetcenterAPI netcenterAPI = new NetcenterAPI("https://www.netcenter.ethz.ch/netcenter/rest/", c.getUsername(), c.getPassword());
 
             GrpcServer s = new GrpcServer(netcenterAPI, c.getIsgGroup());
             s.serve();

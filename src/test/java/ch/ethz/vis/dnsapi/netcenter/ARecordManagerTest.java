@@ -17,6 +17,8 @@ public class ARecordManagerTest {
     private static MockWebServer server;
     private static ARecordManager aRecordManager;
 
+    //TODO: Remove any vis.ethz.ch TLD from tests
+
     @BeforeAll
     public static void setup() throws Exception {
         server = new MockWebServer();

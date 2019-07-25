@@ -16,7 +16,7 @@ public class NetcenterAPI {
     private final CNameRecordManager cNameRecordManager;
     private final TxtRecordManager txtRecordManager;
 
-    public NetcenterAPI(String username, String password) throws JAXBException {
+    public NetcenterAPI(String url, String username, String password) throws JAXBException {
         OkHttpClient client = new OkHttpClient.Builder()
                 .authenticator((route, response) -> {
                     String credentials = Credentials.basic(username, password);
@@ -41,7 +41,7 @@ public class NetcenterAPI {
                 XmlCreateARecordRequestWrapper.class, XmlCreateCNameRecordRequestWrapper.class, XmlSuccess.class);
         Retrofit retrofit = new Retrofit.Builder()
                 .client(client)
-                .baseUrl("https://www.netcenter.ethz.ch/netcenter/rest/")
+                .baseUrl(url)
                 .addConverterFactory(JaxbConverterFactory.create(context))
                 .addConverterFactory(JacksonConverterFactory.create())
                 .build();
