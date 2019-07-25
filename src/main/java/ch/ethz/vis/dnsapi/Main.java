@@ -1,6 +1,7 @@
 package ch.ethz.vis.dnsapi;
 
 //import ch.ethz.vis.dnsapi.grpc.Dnsapi;
+
 import ch.ethz.vis.dnsapi.netcenter.ARecordManager;
 import ch.ethz.vis.dnsapi.netcenter.CNameRecordManager;
 import ch.ethz.vis.dnsapi.netcenter.TxtRecordManager;
@@ -57,7 +58,8 @@ public class Main {
                     .build();
 
             JAXBContext context = JAXBContext.newInstance(CreateARecordRequest.class, GetARecordResponse.class,
-                    GetCNameRecordResponse.class, CreateCNameRecordRequest.class, XmlError.class);
+                    GetCNameRecordResponse.class, XmlCreateCNameRecordRequestWrapper.class, XmlSuccess.class,
+                    CreateARecordRequest.class, XmlCreateARecordRequestWrapper.class);
             Retrofit retrofit = new Retrofit.Builder()
                     .client(client)
                     .baseUrl("https://www.netcenter.ethz.ch/netcenter/rest/")
@@ -71,54 +73,65 @@ public class Main {
 
             List<String> testviews = new LinkedList<>();
             testviews.add("intern");
-            ARecord testRecord = new ARecord();
-            testRecord.setIp("129.132.32.43"); // points to old-forum.vis.ethz.ch
-            testRecord.setIpname("test-netcenter-api");
-            testRecord.setSubdomain("vis.ethz.ch");
-            testRecord.setForward(true);
-            testRecord.setReverse(false);
-            testRecord.setTtl(532);
-            testRecord.setDhcp(false);
-            testRecord.setIsgGroup("adm-vis");
-            testRecord.setViews(testviews);
-            testRecord.setRemark("generated automatically");
+            CreateARecordRequest testRecord = CreateARecordRequest.Builder.newBuilder()
+                    .withIp("129.132.32.43") // points to old-forum.vis.ethz.ch
+                    .withIpName("test-netcenter-api")
+                    .withSubdomain("vis.ethz.ch")
+                    .withForward(true)
+                    .withReverse(false)
+                    .withTtl(532)
+                    .withDhcp(false)
+                    .withDdns(false)
+                    .withIsgGroup("adm-vis")
+                    .withViews(testviews)
+                    .withRemark("generated automatically")
+                    .build();
 
-            CNameRecord testcName = new CNameRecord();
-            testcName.setAliasName("test-netcenter-api-cname");
-            testcName.setSubdomain("vis.ethz.ch");
-            testcName.setDest("www.vis.ethz.ch");
-            testcName.setIsgGroup("adm-vis");
-            testcName.setTtl(234);
-            testcName.setRemark("generated automatically");
-            testcName.setViews(testviews);
+            CreateCNameRecordRequest testcName = CreateCNameRecordRequest.Builder.newBuilder()
+                    .withHostname("www.vis.ethz.ch")
+                    .withAliasName("test-cname-record")
+                    .withSubdomain("vis.ethz.ch")
+                    .withIsgGroup("adm-vis")
+                    .withTtl(234)
+                    .withRemark("generated automatically")
+                    .withViews(testviews)
+                    .build();
 
-            //Response<GetARecordResponse> r = arm.GetARecord("compute0.vis.ethz.ch").execute();
-            //System.out.println(r.code());
-            //System.out.println("Successful call to get ip!");
-            //JAXB.marshal(r.body(), System.out);
+            Response<GetARecordResponse> r = arm.GetARecord("compute0.vis.ethz.ch").execute();
+            System.out.println(r.code());
+            System.out.println("Successful call to get ip!");
+            JAXB.marshal(r.body(), System.out);
 
             //System.out.println("Request:");
             //JAXB.marshal(new CreateARecordRequest(testRecord), System.out);
 
-            Response<XmlSuccess> resp = arm.CreateARecord(new CreateARecordRequest(testRecord)).execute();
+            Response<XmlSuccess> resp = arm.CreateARecord(new XmlCreateARecordRequestWrapper(testRecord)).execute();
             System.out.println(resp.code());
-            System.out.println(resp.errorBody().string());
+            if (resp.isSuccessful()) {
+                JAXB.marshal(resp.body(), System.out);
+            } else {
+                System.out.println(resp.errorBody().string());
+            }
 
-            //Response<String> resp2 = arm.DeleteARecord("129.132.32.43", "test-netcenter-api.vis.ethz.ch").execute();
-            //System.out.println(resp2.code());
-            //System.out.println(resp2.body());
+            Response<XmlSuccess> resp2 = arm.DeleteARecord("129.132.32.43", "test-netcenter-api.vis.ethz.ch").execute();
+            System.out.println(resp2.code());
+            if (resp2.isSuccessful()) {
+                JAXB.marshal(resp2.body(), System.out);
+            } else {
+                System.out.println(resp2.errorBody().string());
+            }
 
-            Response<GetCNameRecordResponse> s = crm.GetCNameRecord("beer.vis.ethz.ch").execute();
-            System.out.println(s.code());
-            JAXB.marshal(s.body(), System.out);
+            //Response<GetCNameRecordResponse> s = crm.GetCNameRecord("beer.vis.ethz.ch").execute();
+            //System.out.println(s.code());
+            //JAXB.marshal(s.body(), System.out);
 
-            //Response<String> resp3 = crm.CreateCNameRecord(new CreateCNameRecordRequest(testcName)).execute();
+            //Response<XmlSuccess> resp3 = crm.CreateCNameRecord(new XmlCreateCNameRecordRequestWrapper(testcName)).execute();
             //System.out.println(resp3.code());
-            //System.out.println(resp3.body());
+            //System.out.println(resp3.body().getMessage());
 
-            //Response<String> resp4 = crm.DeleteCNameRecord("test-netcenter-api-cname.vis.ethz.ch").execute();
-            //System.out.println(resp4.code());
-            //System.out.println(resp4.body());
+            Response<XmlSuccess> resp4 = crm.DeleteCNameRecord("test-cname-record.vis.ethz.ch").execute();
+            System.out.println(resp4.code());
+            System.out.println(resp4.body().getMessage());
 
             //TxtRecord txtRecord = new TxtRecord();
             //txtRecord.setValue("some-text-in-the-txt-record");
@@ -153,46 +166,5 @@ public class Main {
         } catch (Exception e) {
             System.out.println("Exception: " + e);
         }
-    }
-
-    public static void testXML() {
-        String test =
-                "  <usedIps><usedIp>\n" +
-                "    <ip>129.132.240.13</ip>\n" +
-                "    <ipSubnet>129.132.240.0</ipSubnet>\n" +
-                "    <fqname>avalon.ethz.ch</fqname>\n" +
-                "    <forward>Y</forward>\n" +
-                "    <reverse>N</reverse>\n" +
-                "    <ttl>600</ttl>\n" +
-                "    <dhcp>Y</dhcp>\n" +
-                "    <dhcpMac>00-00-00-00-00-00-00-E0</dhcpMac>\n" +
-                "    <ddns>N</ddns>\n" +
-                "    <isgGroup>id-kom</isgGroup>\n" +
-                "    <lastDetection>2009-06-25 15:10:17.0</lastDetection>\n" +
-                "    <views>\n" +
-                "      <view>intern</view>\n" +
-                "      <view>extern</view>\n" +
-                "    </views>\n" +
-                "  </usedIp></usedIps>";
-        try {
-            JAXBContext context = JAXBContext.newInstance(GetARecordResponse.class);
-            Unmarshaller u = context.createUnmarshaller();
-
-            Object resp = u.unmarshal(new StringReader(test));
-
-            if (resp instanceof GetARecordResponse) {
-                GetARecordResponse a = (GetARecordResponse)resp;
-                System.out.println(a.getRecords().get(0).getIp() + " " + a.getRecords().get(0).getIsgGroup());
-
-                CreateARecordRequest createARecordRequest = new CreateARecordRequest(a.getRecords().get(0));
-                JAXB.marshal(createARecordRequest, System.out);
-            } else {
-                System.out.println("resp was null!");
-            }
-        } catch (JAXBException e) {
-            System.out.println("Some JAXB error: " + e);
-        }
-
-        System.out.println("Done!");
     }
 }

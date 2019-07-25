@@ -15,14 +15,6 @@ public class ARecord {
     @XmlElement(name = "fqname")
     private String fqName;
 
-    // This field is unfortunately called "name" in the netcenter.
-    // ipname + subdomain = fqname, however ipname and subdomain have to be given in order for edits to occur.
-    @XmlElement(name = "name")
-    private String ipname;
-
-    @XmlElement(name = "subdomainName")
-    private String subdomain;
-
     @XmlElement(name = "ipSubnet")
     private String ipSubnet;
 
@@ -41,8 +33,8 @@ public class ARecord {
     @XmlJavaTypeAdapter(BooleanAdapter.class)
     private Boolean dhcp;
 
-    @XmlElement(name = "macAddress")
-    private String macAddress;
+    @XmlElement(name = "dhcpMac")
+    private String dhcpMac;
 
     @XmlElement(name = "ddns")
     @XmlJavaTypeAdapter(BooleanAdapter.class)
@@ -54,22 +46,12 @@ public class ARecord {
     @XmlElement(name = "lastDetection")
     private String lastDetection;
 
-    @XmlElement(name = "lastChange")
-    private String lastChange;
-
     @XmlElementWrapper(name = "views")
     @XmlElement(name = "view")
     private List<String> views;
 
     @XmlElement(name = "remark")
     private String remark;
-
-    @XmlElement(name = "lastChangeBy")
-    private String lastChangeBy;
-
-    @XmlJavaTypeAdapter(BooleanAdapter.class)
-    @XmlElement(name = "alias")
-    private Boolean alias;
 
     public String getIp() {
         return ip;
@@ -83,7 +65,7 @@ public class ARecord {
         return fqName;
     }
 
-    private void setFqName(String fqName) {
+    public void setFqName(String fqName) {
         this.fqName = fqName;
     }
 
@@ -127,12 +109,12 @@ public class ARecord {
         this.dhcp = dhcp;
     }
 
-    public String getMacAddress() {
-        return macAddress;
+    public String getDhcpMac() {
+        return dhcpMac;
     }
 
-    public void setMacAddress(String macAddress) {
-        this.macAddress = macAddress;
+    public void setDhcpMac(String dhcpMac) {
+        this.dhcpMac = dhcpMac;
     }
 
     public Boolean getDdns() {
@@ -167,22 +149,6 @@ public class ARecord {
         this.views = views;
     }
 
-    public String getIpname() {
-        return ipname;
-    }
-
-    public void setIpname(String ipname) {
-        this.ipname = ipname;
-    }
-
-    public String getSubdomain() {
-        return subdomain;
-    }
-
-    public void setSubdomain(String subdomain) {
-        this.subdomain = subdomain;
-    }
-
     public String getRemark() {
         return remark;
     }
@@ -191,35 +157,11 @@ public class ARecord {
         this.remark = remark;
     }
 
-    public String getLastChangeBy() {
-        return lastChangeBy;
-    }
-
-    private void setLastChangeBy(String lastChangeBy) {
-        this.lastChangeBy = lastChangeBy;
-    }
-
-    public String getLastChange() {
-        return lastChange;
-    }
-
-    private void setLastChange(String lastChange) {
-        this.lastChange = lastChange;
-    }
-
-    public Boolean getAlias() {
-        return alias;
-    }
-
-    private void setAlias(Boolean alias) {
-        this.alias = alias;
-    }
-
     public String getIpVersion() {
         return ipVersion;
     }
 
-    private void setIpVersion(String ipVersion) {
+    public void setIpVersion(String ipVersion) {
         this.ipVersion = ipVersion;
     }
 }

@@ -8,21 +8,11 @@ import java.util.List;
 
 @XmlAccessorType(XmlAccessType.NONE)
 public class CNameRecord {
-    // The FQDN (new) alias created.
     @XmlElement(name = "fqName")
-    private String src;
+    private String fqName;
 
-    // The destination (old) hostname which already exists.
     @XmlElement(name = "hostName")
-    private String dest;
-
-    // This field is unfortunately called "name" in the netcenter.
-    // aliasName + subdomain = fqName, however in order to create new records, we have to set aliasName + subdomain
-    @XmlElement(name = "name")
-    private String aliasName;
-
-    @XmlElement(name = "subdomainName")
-    private String subdomain;
+    private String hostname;
 
     @XmlElement(name = "ttl")
     private int ttl;
@@ -43,20 +33,20 @@ public class CNameRecord {
     @XmlElement(name = "remark")
     private String remark;
 
-    public String getSrc() {
-        return src;
+    public String getFqName() {
+        return fqName;
     }
 
-    private void setSrc(String src) {
-        this.src = src;
+    private void setFqName(String fqName) {
+        this.fqName = fqName;
     }
 
-    public String getDest() {
-        return dest;
+    public String getHostname() {
+        return hostname;
     }
 
-    public void setDest(String dest) {
-        this.dest = dest;
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
     }
 
     public int getTtl() {
@@ -81,22 +71,6 @@ public class CNameRecord {
 
     public void setViews(List<String> views) {
         this.views = views;
-    }
-
-    public String getAliasName() {
-        return aliasName;
-    }
-
-    public void setAliasName(String aliasName) {
-        this.aliasName = aliasName;
-    }
-
-    public String getSubdomain() {
-        return subdomain;
-    }
-
-    public void setSubdomain(String subdomain) {
-        this.subdomain = subdomain;
     }
 
     public String getRemark() {

@@ -1,7 +1,7 @@
 package ch.ethz.vis.dnsapi.netcenter;
 
-import ch.ethz.vis.dnsapi.netcenter.types.CreateARecordRequest;
 import ch.ethz.vis.dnsapi.netcenter.types.GetARecordResponse;
+import ch.ethz.vis.dnsapi.netcenter.types.XmlCreateARecordRequestWrapper;
 import ch.ethz.vis.dnsapi.netcenter.types.XmlSuccess;
 import retrofit2.Call;
 import retrofit2.http.*;
@@ -9,7 +9,7 @@ import retrofit2.http.*;
 // FIXME: This can actually map both A and AAAA records. Rename appropriately
 public interface ARecordManager {
     @POST("nameToIP")
-    Call<XmlSuccess> CreateARecord(@Body CreateARecordRequest createARecordRequest);
+    Call<XmlSuccess> CreateARecord(@Body XmlCreateARecordRequestWrapper request);
 
     @GET("nameToIP/fqName/{name}")
     Call<GetARecordResponse> GetARecord(@Path("name") String name);
