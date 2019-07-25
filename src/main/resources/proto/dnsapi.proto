@@ -9,8 +9,9 @@ message RecordOptions {
 
 message CreateARecordRequest {
     string ip = 1;  // required
-    string hostname = 2; // required
-    RecordOptions options = 3; // optional
+    string ipName = 2; // required
+    string subdomain = 3; // required
+    RecordOptions options = 10; // optional
 }
 
 message DeleteARecordRequest {
@@ -19,20 +20,21 @@ message DeleteARecordRequest {
 }
 
 message CreateCNameRecordRequest {
-    string src = 1; // required
-    string dest = 2; // required
-    RecordOptions options = 3; // optional
+    string hostname = 1; // required
+    string aliasName = 2; // required
+    string subdomain = 3; // required
+    RecordOptions options = 10; // optional
 }
 
 message DeleteCNameRecordRequest {
-    string src = 1;
-    string dest = 2;
+    string hostname = 1;
+    string aliasName = 2;
 }
 
 message CreateTxtRecordRequest {
     string value = 1; // required
     string hostname = 2; // required
-    RecordOptions options = 3; // optional
+    RecordOptions options = 10; // optional
 }
 
 message DeleteTxtRecordRequest {
@@ -40,15 +42,15 @@ message DeleteTxtRecordRequest {
     string hostname = 2; // required
 }
 
-message Response { }
+message EmptyResponse {}
 
 service Dns {
-    rpc CreateARecord (CreateARecordRequest) returns (Response);
-    rpc DeleteARecord (DeleteARecordRequest) returns (Response);
+    rpc CreateARecord (CreateARecordRequest) returns (EmptyResponse);
+    rpc DeleteARecord (DeleteARecordRequest) returns (EmptyResponse);
 
-    rpc CreateCNameRecord (CreateCNameRecordRequest) returns (Response);
-    rpc DeleteCNameRecord (DeleteCNameRecordRequest) returns (Response);
+    rpc CreateCNameRecord (CreateCNameRecordRequest) returns (EmptyResponse);
+    rpc DeleteCNameRecord (DeleteCNameRecordRequest) returns (EmptyResponse);
 
-    rpc CreateTxtRecord (CreateTxtRecordRequest) returns (Response);
-    rpc DeleteTxtRecord (DeleteTxtRecordRequest) returns (Response);
+    rpc CreateTxtRecord (CreateTxtRecordRequest) returns (EmptyResponse);
+    rpc DeleteTxtRecord (DeleteTxtRecordRequest) returns (EmptyResponse);
 }
