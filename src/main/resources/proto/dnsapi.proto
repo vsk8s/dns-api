@@ -3,7 +3,7 @@ syntax = "proto3";
 option java_package = "ch.ethz.vis.dnsapi.grpc";
 
 message RecordOptions {
-    int32 ttl = 1; // optional, default 600s
+    uint32 ttl = 1; // optional, default 600s
     string isgGroup = 2; // optional, default configured in dnsapi.properties
 }
 
@@ -33,16 +33,20 @@ message DeleteCNameRecordRequest {
 
 message CreateTxtRecordRequest {
     string value = 1; // required
-    string hostname = 2; // required
+    string txtName = 2; // required
+    string subdomain = 3; // required
     RecordOptions options = 10; // optional
 }
 
 message DeleteTxtRecordRequest {
-    string value = 1; // required
-    string hostname = 2; // required
+    string id = 1; // required
 }
 
 message EmptyResponse {}
+
+message TxtResponse {
+    string id = 1;
+}
 
 service Dns {
     rpc CreateARecord (CreateARecordRequest) returns (EmptyResponse);
@@ -51,6 +55,6 @@ service Dns {
     rpc CreateCNameRecord (CreateCNameRecordRequest) returns (EmptyResponse);
     rpc DeleteCNameRecord (DeleteCNameRecordRequest) returns (EmptyResponse);
 
-    rpc CreateTxtRecord (CreateTxtRecordRequest) returns (EmptyResponse);
+    rpc CreateTxtRecord (CreateTxtRecordRequest) returns (TxtResponse);
     rpc DeleteTxtRecord (DeleteTxtRecordRequest) returns (EmptyResponse);
 }

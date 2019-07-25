@@ -1,5 +1,6 @@
 package ch.ethz.vis.dnsapi.netcenter;
 
+import ch.ethz.vis.dnsapi.netcenter.types.CreateTxtRecordRequest;
 import ch.ethz.vis.dnsapi.netcenter.types.JsonResponse;
 import ch.ethz.vis.dnsapi.netcenter.types.TxtResponse;
 import ch.ethz.vis.dnsapi.netcenter.types.TxtRecord;
@@ -8,7 +9,7 @@ import retrofit2.http.*;
 
 public interface TxtRecordManager {
     @POST("txt")
-    Call<TxtResponse> CreateTxtRecord(@Body TxtRecord txtRecord);
+    Call<TxtResponse> CreateTxtRecord(@Body CreateTxtRecordRequest txtRecord);
 
     @GET("txt/{id}")
     Call<TxtResponse> GetTxtRecord(@Path("id") String id);

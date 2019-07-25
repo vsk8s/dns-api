@@ -7,17 +7,17 @@ import java.util.List;
 
 public class TxtResponse {
     @JsonProperty(value = "errors", required = false)
-    private List<JsonError> error;
+    private List<JsonError> errors;
 
     @JsonUnwrapped
     private TxtRecord txtRecord;
 
-    public List<JsonError> getError() {
-        return error;
+    public List<JsonError> getErrors() {
+        return errors;
     }
 
-    private void setError(List<JsonError> error) {
-        this.error = error;
+    private void setErrors(List<JsonError> errors) {
+        this.errors = errors;
     }
 
     public TxtRecord getTxtRecord() {

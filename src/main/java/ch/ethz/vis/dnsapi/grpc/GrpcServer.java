@@ -27,7 +27,7 @@ public class GrpcServer {
 
     public void serve() throws IOException {
         server = NettyServerBuilder.forPort(port)
-                .addService(new DnsImpl(netcenterAPI.getaRecordManager(), defaultIsg))
+                .addService(new DnsImpl(netcenterAPI, defaultIsg))
                 .addService(ProtoReflectionService.newInstance())
                 .build();
 
