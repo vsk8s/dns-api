@@ -144,8 +144,8 @@ public class CreateCNameRecordRequest {
         }
 
         public CreateCNameRecordRequest build() {
-            if (hostname == null || aliasName == null || subdomain == null) {
-                throw new IllegalArgumentException("hostname, aliasName and subdomain required!");
+            if (hostname == null || aliasName == null || subdomain == null || isgGroup == null) {
+                throw new IllegalArgumentException("hostname, aliasName, subdomain and isgGroup required!");
             }
 
             CreateCNameRecordRequest createCNameRecordRequest = new CreateCNameRecordRequest();

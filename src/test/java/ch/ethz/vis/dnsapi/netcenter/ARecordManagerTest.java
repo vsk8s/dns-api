@@ -35,8 +35,8 @@ public class ARecordManagerTest {
         server.enqueue(new MockResponse().setResponseCode(200).setBody("<success>Done!</success>"));
         server.enqueue(new MockResponse().setResponseCode(400).setBody("<errors><error>Some error occurred</error></errors>"));
 
-        JAXBContext context = JAXBContext.newInstance(CreateARecordRequest.class, GetARecordResponse.class,
-                GetCNameRecordResponse.class, CreateCNameRecordRequest.class, XmlSuccess.class);
+        JAXBContext context = JAXBContext.newInstance(GetARecordResponse.class, XmlCreateARecordRequestWrapper.class,
+                GetCNameRecordResponse.class, XmlCreateCNameRecordRequestWrapper.class, XmlSuccess.class);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(server.url("/netcenter/rest/"))
                 .addConverterFactory(JaxbConverterFactory.create(context))
@@ -80,12 +80,19 @@ public class ARecordManagerTest {
     @Test
     @Order(2)
     public void testCreateARecord() throws Exception {
-        Response<XmlSuccess> response = aRecordManager.CreateARecord(new CreateARecordRequest(new ARecord())).execute();
+        XmlCreateARecordRequestWrapper request = new XmlCreateARecordRequestWrapper(
+                CreateARecordRequest.Builder.newBuilder()
+                        .withIp("192.0.2.10")
+                        .withIpName("example-ip-record")
+                        .withSubdomain("some-subdomain")
+                        .withIsgGroup("some-isg-group")
+                        .build());
+        Response<XmlSuccess> response = aRecordManager.CreateARecord(request).execute();
         assertTrue(response.isSuccessful());
         assertNotNull(response.body());
         assertEquals("Done!", response.body().getMessage());
 
-        response = aRecordManager.CreateARecord(new CreateARecordRequest(new ARecord())).execute();
+        response = aRecordManager.CreateARecord(request).execute();
         assertFalse(response.isSuccessful());
         assertNull(response.body());
     }
@@ -93,14 +100,13 @@ public class ARecordManagerTest {
     @Test
     @Order(3)
     public void testDeleteARecord() throws Exception {
-        Response<XmlSuccess> response = aRecordManager.DeleteARecord("192.0.2.10", "compute0.vis.ethz.ch").execute();
+        Response<XmlSuccess> response = aRecordManager.DeleteARecord("192.0.2.10", "some-fqdn").execute();
         assertTrue(response.isSuccessful());
         assertNotNull(response.body());
         assertEquals("Done!", response.body().getMessage());
 
-        response = aRecordManager.DeleteARecord("192.0.2.10", "compute0.vis.ethz.ch").execute();
+        response = aRecordManager.DeleteARecord("192.0.2.10", "some-fqdn").execute();
         assertFalse(response.isSuccessful());
         assertNull(response.body());
     }
-
 }

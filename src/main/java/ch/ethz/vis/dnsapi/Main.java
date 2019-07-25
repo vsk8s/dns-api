@@ -59,7 +59,8 @@ public class Main {
 
             JAXBContext context = JAXBContext.newInstance(CreateARecordRequest.class, GetARecordResponse.class,
                     GetCNameRecordResponse.class, XmlCreateCNameRecordRequestWrapper.class, XmlSuccess.class,
-                    CreateARecordRequest.class, XmlCreateARecordRequestWrapper.class);
+                    CreateARecordRequest.class, XmlCreateARecordRequestWrapper.class,
+                    CreateCNameRecordRequest.class, XmlCreateCNameRecordRequestWrapper.class);
             Retrofit retrofit = new Retrofit.Builder()
                     .client(client)
                     .baseUrl("https://www.netcenter.ethz.ch/netcenter/rest/")

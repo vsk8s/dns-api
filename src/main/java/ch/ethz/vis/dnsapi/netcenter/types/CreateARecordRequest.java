@@ -227,8 +227,8 @@ public class CreateARecordRequest {
         }
 
         public CreateARecordRequest build() {
-            if (ip == null || ipName == null || subdomain == null) {
-                throw new IllegalArgumentException("ip, ipName and subdomain have to provided!");
+            if (ip == null || ipName == null || subdomain == null || isgGroup == null) {
+                throw new IllegalArgumentException("ip, ipName, subdomain and isGroup required!");
             }
 
             CreateARecordRequest createARecordRequest = new CreateARecordRequest();
