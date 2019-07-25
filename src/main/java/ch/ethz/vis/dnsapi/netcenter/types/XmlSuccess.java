@@ -9,8 +9,7 @@ import javax.xml.bind.annotation.XmlValue;
 @XmlRootElement(name = "success")
 public class XmlSuccess {
     @XmlValue
-    private
-    String message;
+    private String message;
 
     public String getMessage() {
         return message;

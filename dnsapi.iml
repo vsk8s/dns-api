@@ -15,6 +15,8 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Bundled Protobuf Distribution" level="application" />
+    <orderEntry type="library" scope="TEST" name="Maven: io.grpc:grpc-testing:1.22.1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.junit.vintage:junit-vintage-engine:5.5.1" level="project" />
     <orderEntry type="library" name="Maven: com.squareup.retrofit2:retrofit:2.6.0" level="project" />
     <orderEntry type="library" name="Maven: com.squareup.okhttp3:okhttp:3.12.0" level="project" />
     <orderEntry type="library" name="Maven: com.squareup.okio:okio:1.15.0" level="project" />

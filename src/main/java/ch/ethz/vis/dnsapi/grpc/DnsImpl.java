@@ -43,7 +43,7 @@ public class DnsImpl extends DnsImplBase {
     }
 
     private Dnsapi.EmptyResponse createARecord(String ip, String ipName, String subdomain, Dnsapi.RecordOptions options) throws StatusException {
-        LOGGER.debug("Create A:" + ipName + "." + subdomain + " -> " + ip);
+        LOGGER.debug("Create A: " + ipName + "." + subdomain + " -> " + ip);
 
         if (ip == null || ipName == null || subdomain == null) {
             LOGGER.debug("ip, ipName and subdomain not given to createARecord");
