@@ -39,8 +39,7 @@ message CreateTxtRecordRequest {
 
 message DeleteTxtRecordRequest {
     string value = 1; // required
-    string txtName = 2; // required
-    string subdomain = 3; // required
+    string fqName = 2; // required
 }
 
 message EmptyResponse {}

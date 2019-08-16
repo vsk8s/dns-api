@@ -233,22 +233,22 @@ public class DnsImpl extends DnsImplBase {
     @Override
     public void deleteTxtRecord(Dnsapi.DeleteTxtRecordRequest request, StreamObserver<Dnsapi.EmptyResponse> responseObserver) {
         try {
-            responseObserver.onNext(deleteTxtRecord(request.getTxtName(), request.getSubdomain(), request.getValue()));
+            responseObserver.onNext(deleteTxtRecord(request.getFqName(), request.getValue()));
             responseObserver.onCompleted();
         } catch (StatusException e) {
             responseObserver.onError(e);
         }
     }
 
-    private Dnsapi.EmptyResponse deleteTxtRecord(String txtName, String subdomain, String value) throws StatusException {
-        LOGGER.debug("Delete TXT: " + txtName + "." + subdomain + " -> " + value);
-        if (txtName == null || subdomain == null || value == null) {
-            LOGGER.debug("txtName, subdomain and value not given to createTxtRecord");
-            throw new StatusException(Status.INVALID_ARGUMENT.withDescription("txtName, subdomain and value are required"));
+    private Dnsapi.EmptyResponse deleteTxtRecord(String fqName, String value) throws StatusException {
+        LOGGER.debug("Delete TXT: " + fqName + " -> " + value);
+        if (fqName == null || value == null) {
+            LOGGER.debug("fqName and value not given to deleteTxtRecord");
+            throw new StatusException(Status.INVALID_ARGUMENT.withDescription("fqName and value are required"));
         }
 
         TxtRecord wantedRecord = TxtRecord.Builder.newBuilder()
-                .withFqName(txtName + "." + subdomain)
+                .withFqName(fqName)
                 .withValue(value)
                 .build();
 
