@@ -36,7 +36,6 @@ public class NetcenterAPI {
                         return response.newBuilder().body(ResponseBody.create(response.body().contentType(), responseBody)).build();
                     }
                 })
-                .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .build();
 
         JAXBContext context = JAXBContext.newInstance(GetARecordResponse.class, GetCNameRecordResponse.class,
