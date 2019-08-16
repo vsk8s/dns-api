@@ -12,8 +12,6 @@ public class ARecordImplTest extends DnsImplBase {
     private static final String IP = "192.0.2.10";
     private static final String IP_SUBNET = "192.0.2.0";
     private static final String IP_NAME = "some-ip-name";
-    private static final String SUBDOMAIN = "some-subdomain.test";
-    private static final String CUSTOM_ISG = "custom-isg";
 
     @org.junit.Test
     public void successfullyCreateARecordWithDefaultIsg() throws InterruptedException {
@@ -76,7 +74,7 @@ public class ARecordImplTest extends DnsImplBase {
         org.junit.Assert.assertNotNull(response);
 
         RecordedRequest rr = mockWebServer.takeRequest();
-        org.junit.Assert.assertEquals(DEFAULT_PATH + "nameToIP/" + IP + "/" + IP_NAME + "." + SUBDOMAIN, rr.getPath());
+        org.junit.Assert.assertEquals(DEFAULT_PATH + "nameToIP/" + IP + "/" + IP_NAME + "." + DEFAULT_SUBDOMAIN, rr.getPath());
     }
 
     @org.junit.Test(expected = StatusRuntimeException.class)
@@ -92,17 +90,18 @@ public class ARecordImplTest extends DnsImplBase {
         return Dnsapi.CreateARecordRequest.newBuilder()
                 .setIp(IP)
                 .setIpName(IP_NAME)
-                .setSubdomain(SUBDOMAIN);
+                .setSubdomain(DEFAULT_SUBDOMAIN);
     }
+
     private Dnsapi.DeleteARecordRequest.Builder defaultDeleteARecordRequest() {
         return Dnsapi.DeleteARecordRequest.newBuilder()
-                .setHostname(IP_NAME + "." + SUBDOMAIN)
+                .setHostname(IP_NAME + "." + DEFAULT_SUBDOMAIN)
                 .setIp(IP);
     }
 
     private void assertRequiredFieldsSet(CreateARecordRequest request) {
         org.junit.Assert.assertEquals(IP, request.getIp());
         org.junit.Assert.assertEquals(IP_NAME, request.getIpName());
-        org.junit.Assert.assertEquals(SUBDOMAIN, request.getSubdomain());
+        org.junit.Assert.assertEquals(DEFAULT_SUBDOMAIN, request.getSubdomain());
     }
 }

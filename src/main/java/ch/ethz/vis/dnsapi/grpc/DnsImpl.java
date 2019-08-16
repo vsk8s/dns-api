@@ -11,11 +11,17 @@ import org.apache.logging.log4j.Logger;
 import retrofit2.Response;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class DnsImpl extends DnsImplBase {
     private static final Logger LOGGER = LogManager.getLogger(DnsImpl.class);
+
+    private static final List<String> VIEW_INTERNAL = Collections.singletonList("intern");
+    private static final List<String> VIEW_BOTH = Arrays.asList("intern", "extern");
+    private static final int DEFAULT_TTL = 600;
 
     private final NetcenterAPI netcenterAPI;
     private final String defaultIsg;
@@ -54,6 +60,8 @@ public class DnsImpl extends DnsImplBase {
                 .withIpName(ipName)
                 .withSubdomain(subdomain)
                 .withIsgGroup(options.getIsgGroup().isEmpty() ? defaultIsg : options.getIsgGroup())
+                .withViews(options.getExternallyViewable() ? VIEW_BOTH : VIEW_INTERNAL)
+                .withTtl(options.getTtl() > 0 ? options.getTtl() : 600)
                 .withReverse(false) // FIXME: Find sensible defaults.
                 .build();
 
@@ -66,7 +74,7 @@ public class DnsImpl extends DnsImplBase {
                 throw new StatusException(Status.INTERNAL.withDescription("Something went wrong: " + error));
             }
         } catch (IOException e) {
-            LOGGER.error("Unexpected exception: " + e);
+            LOGGER.error("Unexpected IOException: " + e);
             throw new StatusException(Status.INTERNAL.withDescription("error relaying request to API"));
         }
 
@@ -99,7 +107,7 @@ public class DnsImpl extends DnsImplBase {
                 throw new StatusException(Status.INTERNAL.withDescription("Something went wrong: " + error));
             }
         } catch (IOException e) {
-            LOGGER.error("Unexpected exception: " + e);
+            LOGGER.error("Unexpected IOException: " + e);
             throw new StatusException(Status.INTERNAL.withDescription("error relaying request to API"));
         }
 
@@ -129,6 +137,8 @@ public class DnsImpl extends DnsImplBase {
                     .withAliasName(aliasName)
                     .withSubdomain(subdomain)
                     .withIsgGroup(options.getIsgGroup().isEmpty() ? defaultIsg : options.getIsgGroup())
+                    .withViews(options.getExternallyViewable() ? VIEW_BOTH : VIEW_INTERNAL)
+                    .withTtl(options.getTtl() > 0 ? options.getTtl() : DEFAULT_TTL)
                     .build();
 
             Response<XmlSuccess> response = netcenterAPI.getcNameRecordManager().CreateCNameRecord(
@@ -140,12 +150,13 @@ public class DnsImpl extends DnsImplBase {
                 throw new StatusException(Status.INTERNAL.withDescription("Something went wrong: " + error));
             }
         } catch (IOException e) {
-            LOGGER.error("Unexpected exception: " + e);
+            LOGGER.error("Unexpected IOException: " + e);
             throw new StatusException(Status.INTERNAL.withDescription("error relaying request to API"));
         }
 
         return Dnsapi.EmptyResponse.getDefaultInstance();
     }
+
 
     @Override
     public void deleteCNameRecord(Dnsapi.DeleteCNameRecordRequest request, StreamObserver<Dnsapi.EmptyResponse> responseObserver) {
@@ -173,7 +184,7 @@ public class DnsImpl extends DnsImplBase {
                 throw new StatusException(Status.INTERNAL.withDescription("Something went wrong: " + error));
             }
         } catch (IOException e) {
-            LOGGER.error("Unexpected exception: " + e);
+            LOGGER.error("Unexpected IOException: " + e);
             throw new StatusException(Status.INTERNAL.withDescription("error relaying request to API"));
         }
 
@@ -203,30 +214,63 @@ public class DnsImpl extends DnsImplBase {
                     .withSubdomain(subdomain)
                     .withValue(value)
                     .withIsgGroup(options.getIsgGroup().isEmpty() ? defaultIsg : options.getIsgGroup())
-                    .withViews(Collections.singletonList("intern")) // FIXME: Find sensible default
-                    .withTtl(options.getTtl() > 0 ? options.getTtl() : 600) // FIXME: Find sensible default
+                    .withViews(options.getExternallyViewable() ? VIEW_BOTH : VIEW_INTERNAL)
+                    .withTtl(options.getTtl() > 0 ? options.getTtl() : DEFAULT_TTL)
                     .build();
 
             Response<TxtResponse> response = netcenterAPI.getTxtRecordManager().CreateTxtRecord(request).execute();
 
-            if (!response.isSuccessful()) {
-                String error = response.errorBody().string();
-                LOGGER.debug("Something went wrong: " + error);
-                throw new StatusException(Status.INTERNAL.withDescription("Something went wrong: " + error));
-            } else if (response.body().getTxtRecord() == null) {
-                LOGGER.error("Could not parse body!");
-                throw new StatusException(Status.INTERNAL.withDescription("Could not parse netcenter response"));
-            } else if (response.body().getErrors() != null) {
-                String errorMsg = response.body().getErrors().stream().map(JsonError::getErrorMsg).collect(Collectors.joining(", "));
-                LOGGER.debug("Something went wrong: " + errorMsg);
-                throw new StatusException(Status.INTERNAL.withDescription("Got errors from the API: " + errorMsg));
-            }
+            checkTxtJsonResponse(response);
         } catch (IOException e) {
-            LOGGER.error("Unexpected exception: " + e);
+            LOGGER.error("Unexpected IOException: " + e);
             throw new StatusException(Status.INTERNAL.withDescription("error relaying request to API"));
         }
 
         return Dnsapi.EmptyResponse.getDefaultInstance();
+    }
+
+    @Override
+    public void searchTxtRecord(Dnsapi.SearchTxtRecordRequest request, StreamObserver<Dnsapi.TxtResponse> responseObserver) {
+        try {
+            responseObserver.onNext(searchTxtRecord(request.getFqName()));
+            responseObserver.onCompleted();
+        } catch (StatusException e) {
+            responseObserver.onError(e);
+        }
+    }
+
+    private Dnsapi.TxtResponse searchTxtRecord(String fqName) throws StatusException {
+        LOGGER.debug("Search TXT: " + fqName);
+        if (fqName == null || fqName.isBlank()) {
+            LOGGER.debug("fqName is required");
+            throw new StatusException(Status.INVALID_ARGUMENT.withDescription("fqName is required"));
+        }
+
+        try {
+            SearchTxtRecordRequest request = SearchTxtRecordRequest.Builder.newBuilder()
+                    .withFqName(fqName).build();
+
+            Response<TxtResponse> response = netcenterAPI.getTxtRecordManager().SearchTxtRecord(request).execute();
+
+            TxtRecord record = checkTxtJsonResponse(response);
+            if (record.getId() == null || record.getFqName() == null || record.getIsgGroup() == null || record.getViews() == null) {
+                LOGGER.debug("Got empty record");
+                throw new StatusException(Status.NOT_FOUND.withDescription("TXT record not found"));
+            }
+
+            return Dnsapi.TxtResponse.newBuilder()
+                    .setFqName(record.getFqName())
+                    .setValue(record.getValue())
+                    .setOptions(Dnsapi.RecordOptions.newBuilder()
+                            .setIsgGroup(record.getIsgGroup())
+                            .setTtl(record.getTtl())
+                            .setExternallyViewable(record.getViews().contains("extern"))
+                            .build())
+                    .build();
+        } catch (IOException e) {
+            LOGGER.error("Unexpected IOException: " + e);
+            throw new StatusException(Status.INTERNAL.withDescription("error relaying request to API"));
+        }
     }
 
     @Override
@@ -236,6 +280,9 @@ public class DnsImpl extends DnsImplBase {
             responseObserver.onCompleted();
         } catch (StatusException e) {
             responseObserver.onError(e);
+        } catch (Exception e) {
+            LOGGER.error("Unexpected Exception: " + e);
+            responseObserver.onError(new StatusException(Status.INTERNAL.withDescription("Internal error")));
         }
     }
 
@@ -246,32 +293,18 @@ public class DnsImpl extends DnsImplBase {
             throw new StatusException(Status.INVALID_ARGUMENT.withDescription("fqName and value are required"));
         }
 
-        TxtRecord wantedRecord = TxtRecord.Builder.newBuilder()
+        SearchTxtRecordRequest request = SearchTxtRecordRequest.Builder.newBuilder()
                 .withFqName(fqName)
                 .withValue(value)
                 .build();
 
         try {
-            Response<TxtResponse> searchTxtRecordResponse = netcenterAPI.getTxtRecordManager().SearchTxtRecord(wantedRecord).execute();
-            if (!searchTxtRecordResponse.isSuccessful()) {
-                LOGGER.error("Searching for txt record id went wrong: " + searchTxtRecordResponse.errorBody().string());
-                throw new StatusException(Status.INTERNAL.withDescription("Error getting txt id"));
-            } else if (searchTxtRecordResponse.body() == null) {
-                LOGGER.error("Empty body in successful call");
-                throw new StatusException(Status.INTERNAL.withDescription("Empty body returned in successful call"));
-            } else if (searchTxtRecordResponse.body().getErrors() != null) {
-                String errorMsg = searchTxtRecordResponse.body().getErrors().stream().map(JsonError::getErrorMsg).collect(Collectors.joining(","));
-                LOGGER.error("Error returned from the netcenter API: " + errorMsg);
-                throw new StatusException(Status.INTERNAL.withDescription("Errors returned by the API: " + errorMsg));
-            } else if (searchTxtRecordResponse.body().getTxtRecord() == null) {
-                LOGGER.error("TXT record not found");
-                throw new StatusException(Status.NOT_FOUND.withDescription("TXT record not found"));
-            }
+            Response<TxtResponse> searchTxtRecordResponse = netcenterAPI.getTxtRecordManager().SearchTxtRecord(request).execute();
+            TxtRecord record = checkTxtJsonResponse(searchTxtRecordResponse);
 
-            TxtRecord record = searchTxtRecordResponse.body().getTxtRecord();
             LOGGER.debug("Found TXT record: " + record.getFqName() + " -> " + record.getValue());
             if (record.getId() == null || record.getFqName() == null || record.getValue() == null) {
-                LOGGER.warn("TXT record not found");
+                LOGGER.warn("TXT record was empty");
                 throw new StatusException(Status.NOT_FOUND.withDescription("TXT record not found"));
             } else if (!record.getFqName().equals(fqName) || !record.getValue().equals(value)) {
                 LOGGER.warn("TXT record does not match given parameters");
@@ -279,23 +312,46 @@ public class DnsImpl extends DnsImplBase {
             }
 
             LOGGER.debug("Got TXT id: " + record.getId());
-
             Response<JsonResponse> deleteTxtResponse = netcenterAPI.getTxtRecordManager().DeleteTxtRecord(record.getId()).execute();
 
             if (!deleteTxtResponse.isSuccessful()) {
                 String error = deleteTxtResponse.errorBody().string();
-                LOGGER.debug("Something went wrong: " + error);
-                throw new StatusException(Status.INTERNAL.withDescription("Something went wrong: " + error));
+                LOGGER.debug("Unsuccessful request: " + error);
+                throw new StatusException(Status.INTERNAL.withDescription("Error in request: " + error));
             } else if (deleteTxtResponse.body().getErrors() != null) {
                 String errorMsg = deleteTxtResponse.body().getErrors().stream().map(JsonError::getErrorMsg).collect(Collectors.joining(", "));
-                LOGGER.debug("Something went wrong: " + errorMsg);
-                throw new StatusException(Status.INTERNAL.withDescription("API reported error: " + errorMsg));
+                LOGGER.debug("Got errors from API: " + errorMsg);
+                throw new StatusException(Status.INTERNAL.withDescription("Got errors from API:" + errorMsg));
             }
         } catch (IOException e) {
-            LOGGER.error("Unexpected exception: " + e);
+            LOGGER.error("Unexpected IOException: " + e);
             throw new StatusException(Status.INTERNAL.withDescription("Error relaying request to API"));
         }
 
         return Dnsapi.EmptyResponse.getDefaultInstance();
+    }
+
+    private TxtRecord checkTxtJsonResponse(Response<TxtResponse> response) throws IOException, StatusException {
+        if (!response.isSuccessful()) {
+            if (response.errorBody() != null) {
+                String error = response.errorBody().string();
+                LOGGER.error("Unsuccessful request: " + error);
+                throw new StatusException(Status.INTERNAL.withDescription("Error in request: " + error));
+            } else {
+                LOGGER.error("Unsuccessful request");
+                throw new StatusException(Status.INTERNAL.withDescription("Internal error"));
+            }
+        } else if (response.body() == null) {
+            LOGGER.error("Got empty body from TXT api");
+            throw new StatusException(Status.INTERNAL.withDescription("Got invalid response from API"));
+        } else if (response.body().getErrors() != null) {
+            String errorMsg = response.body().getErrors().stream().map(JsonError::getErrorMsg).collect(Collectors.joining(", "));
+            LOGGER.debug("Got errors from API: " + errorMsg);
+            throw new StatusException(Status.INTERNAL.withDescription("Got errors from API: " + errorMsg));
+        } else if (response.body().getTxtRecord() == null) {
+            LOGGER.error("Got null record from API");
+            throw new StatusException(Status.INTERNAL.withDescription("Got invalid response from API"));
+        }
+        return response.body().getTxtRecord();
     }
 }

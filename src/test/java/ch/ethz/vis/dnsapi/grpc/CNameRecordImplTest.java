@@ -11,8 +11,6 @@ import javax.xml.bind.JAXB;
 public class CNameRecordImplTest extends DnsImplBase {
     private static final String HOST_NAME = "the.fully.qualified.domain.name.test";
     private static final String ALIAS_NAME = "the.alias";
-    private static final String SUBDOMAIN = "for.some.subdomain.test";
-    private static final String CUSTOM_ISG = "custom-isg";
 
     @org.junit.Test
     public void successfullyCreateARecordWithDefaultIsg() throws InterruptedException {
@@ -75,7 +73,7 @@ public class CNameRecordImplTest extends DnsImplBase {
         org.junit.Assert.assertNotNull(response);
 
         RecordedRequest rr = mockWebServer.takeRequest();
-        org.junit.Assert.assertEquals(DEFAULT_PATH + "alias/" + ALIAS_NAME + "." + SUBDOMAIN, rr.getPath());
+        org.junit.Assert.assertEquals(DEFAULT_PATH + "alias/" + ALIAS_NAME + "." + DEFAULT_SUBDOMAIN, rr.getPath());
     }
 
     @org.junit.Test(expected = StatusRuntimeException.class)
@@ -91,16 +89,17 @@ public class CNameRecordImplTest extends DnsImplBase {
         return Dnsapi.CreateCNameRecordRequest.newBuilder()
                 .setHostname(HOST_NAME)
                 .setAliasName(ALIAS_NAME)
-                .setSubdomain(SUBDOMAIN);
+                .setSubdomain(DEFAULT_SUBDOMAIN);
     }
+
     private Dnsapi.DeleteCNameRecordRequest.Builder defaultDeleteCNameRecordRequest() {
         return Dnsapi.DeleteCNameRecordRequest.newBuilder()
-                .setAlias(ALIAS_NAME + "." + SUBDOMAIN);
+                .setAlias(ALIAS_NAME + "." + DEFAULT_SUBDOMAIN);
     }
 
     private void assertRequiredFieldsSet(CreateCNameRecordRequest request) {
         org.junit.Assert.assertEquals(HOST_NAME, request.getHostname());
         org.junit.Assert.assertEquals(ALIAS_NAME, request.getAliasName());
-        org.junit.Assert.assertEquals(SUBDOMAIN, request.getSubdomain());
+        org.junit.Assert.assertEquals(DEFAULT_SUBDOMAIN, request.getSubdomain());
     }
 }
