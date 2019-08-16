@@ -25,7 +25,7 @@ public class TxtRecordImplTest extends DnsImplBase {
 
         Dnsapi.CreateTxtRecordRequest request = defaultCreateTxtRecordRequest().build();
 
-        Dnsapi.TxtResponse response = stub.createTxtRecord(request);
+        Dnsapi.EmptyResponse response = stub.createTxtRecord(request);
         org.junit.Assert.assertNotNull(response);
 
         RecordedRequest rr = mockWebServer.takeRequest();
@@ -44,9 +44,8 @@ public class TxtRecordImplTest extends DnsImplBase {
                 .setOptions(Dnsapi.RecordOptions.newBuilder().setIsgGroup(CUSTOM_ISG).build())
                 .build();
 
-        Dnsapi.TxtResponse response = stub.createTxtRecord(request);
+        Dnsapi.EmptyResponse response = stub.createTxtRecord(request);
         org.junit.Assert.assertNotNull(response);
-        org.junit.Assert.assertEquals(ID, response.getId());
 
         RecordedRequest rr = mockWebServer.takeRequest();
         CreateTxtRecordRequest generatedRequest = mapper.readValue(rr.getBody().inputStream(), CreateTxtRecordRequest.class);
@@ -62,7 +61,7 @@ public class TxtRecordImplTest extends DnsImplBase {
 
         Dnsapi.CreateTxtRecordRequest request = defaultCreateTxtRecordRequest().build();
 
-        Dnsapi.TxtResponse response = stub.createTxtRecord(request);
+        Dnsapi.EmptyResponse response = stub.createTxtRecord(request);
     }
 
     @org.junit.Test

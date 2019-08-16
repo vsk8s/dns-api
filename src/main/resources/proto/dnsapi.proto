@@ -44,10 +44,6 @@ message DeleteTxtRecordRequest {
 
 message EmptyResponse {}
 
-message TxtResponse {
-    string id = 1;
-}
-
 service Dns {
     rpc CreateARecord (CreateARecordRequest) returns (EmptyResponse);
     rpc DeleteARecord (DeleteARecordRequest) returns (EmptyResponse);
@@ -55,6 +51,6 @@ service Dns {
     rpc CreateCNameRecord (CreateCNameRecordRequest) returns (EmptyResponse);
     rpc DeleteCNameRecord (DeleteCNameRecordRequest) returns (EmptyResponse);
 
-    rpc CreateTxtRecord (CreateTxtRecordRequest) returns (TxtResponse);
+    rpc CreateTxtRecord (CreateTxtRecordRequest) returns (EmptyResponse);
     rpc DeleteTxtRecord (DeleteTxtRecordRequest) returns (EmptyResponse);
 }

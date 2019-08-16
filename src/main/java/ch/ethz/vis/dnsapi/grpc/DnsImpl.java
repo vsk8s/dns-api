@@ -11,7 +11,6 @@ import org.apache.logging.log4j.Logger;
 import retrofit2.Response;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
@@ -28,7 +27,7 @@ public class DnsImpl extends DnsImplBase {
 
     @Override
     public void createARecord(Dnsapi.CreateARecordRequest request, StreamObserver<Dnsapi.EmptyResponse> responseObserver) {
-        LOGGER.debug("Got createArecord request");
+        LOGGER.debug("Got createARecord request");
         try {
             responseObserver.onNext(createARecord(
                     request.getIp(),
@@ -182,7 +181,7 @@ public class DnsImpl extends DnsImplBase {
     }
 
     @Override
-    public void createTxtRecord(Dnsapi.CreateTxtRecordRequest request, StreamObserver<Dnsapi.TxtResponse> responseObserver) {
+    public void createTxtRecord(Dnsapi.CreateTxtRecordRequest request, StreamObserver<Dnsapi.EmptyResponse> responseObserver) {
         try {
             responseObserver.onNext(createTxtRecord(request.getTxtName(), request.getSubdomain(), request.getValue(), request.getOptions()));
             responseObserver.onCompleted();
@@ -191,7 +190,7 @@ public class DnsImpl extends DnsImplBase {
         }
     }
 
-    private Dnsapi.TxtResponse createTxtRecord(String txtName, String subdomain, String value, Dnsapi.RecordOptions options) throws StatusException {
+    private Dnsapi.EmptyResponse createTxtRecord(String txtName, String subdomain, String value, Dnsapi.RecordOptions options) throws StatusException {
         LOGGER.debug("Create TXT: " + txtName + "." + subdomain + " -> " + value);
         if (txtName == null || subdomain == null || value == null) {
             LOGGER.debug("txtName, subdomain and value not given to createTxtRecord");
@@ -222,12 +221,12 @@ public class DnsImpl extends DnsImplBase {
                 LOGGER.debug("Something went wrong: " + errorMsg);
                 throw new StatusException(Status.INTERNAL.withDescription("Got errors from the API: " + errorMsg));
             }
-
-            return Dnsapi.TxtResponse.newBuilder().setId(response.body().getTxtRecord().getId()).build();
         } catch (IOException e) {
             LOGGER.error("Unexpected exception: " + e);
             throw new StatusException(Status.INTERNAL.withDescription("error relaying request to API"));
         }
+
+        return Dnsapi.EmptyResponse.getDefaultInstance();
     }
 
     @Override
@@ -264,16 +263,24 @@ public class DnsImpl extends DnsImplBase {
                 String errorMsg = searchTxtRecordResponse.body().getErrors().stream().map(JsonError::getErrorMsg).collect(Collectors.joining(","));
                 LOGGER.error("Error returned from the netcenter API: " + errorMsg);
                 throw new StatusException(Status.INTERNAL.withDescription("Errors returned by the API: " + errorMsg));
-            } else if (searchTxtRecordResponse.body().getTxtRecord() == null
-                    || searchTxtRecordResponse.body().getTxtRecord().getId() == null) {
+            } else if (searchTxtRecordResponse.body().getTxtRecord() == null) {
                 LOGGER.error("TXT record not found");
                 throw new StatusException(Status.NOT_FOUND.withDescription("TXT record not found"));
             }
 
-            String txtId = searchTxtRecordResponse.body().getTxtRecord().getId();
-            LOGGER.debug("Got TXT id: " + txtId);
+            TxtRecord record = searchTxtRecordResponse.body().getTxtRecord();
+            LOGGER.debug("Found TXT record: " + record.getFqName() + " -> " + record.getValue());
+            if (record.getId() == null || record.getFqName() == null || record.getValue() == null) {
+                LOGGER.warn("TXT record not found");
+                throw new StatusException(Status.NOT_FOUND.withDescription("TXT record not found"));
+            } else if (!record.getFqName().equals(fqName) || !record.getValue().equals(value)) {
+                LOGGER.warn("TXT record does not match given parameters");
+                throw new StatusException(Status.NOT_FOUND.withDescription("TXT record not found"));
+            }
 
-            Response<JsonResponse> deleteTxtResponse = netcenterAPI.getTxtRecordManager().DeleteTxtRecord(txtId).execute();
+            LOGGER.debug("Got TXT id: " + record.getId());
+
+            Response<JsonResponse> deleteTxtResponse = netcenterAPI.getTxtRecordManager().DeleteTxtRecord(record.getId()).execute();
 
             if (!deleteTxtResponse.isSuccessful()) {
                 String error = deleteTxtResponse.errorBody().string();
