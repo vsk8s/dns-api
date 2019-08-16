@@ -2,6 +2,7 @@ package ch.ethz.vis.dnsapi.netcenter;
 
 import ch.ethz.vis.dnsapi.netcenter.types.*;
 import okhttp3.*;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.converter.jaxb.JaxbConverterFactory;

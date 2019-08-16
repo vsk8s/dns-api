@@ -14,24 +14,26 @@ public class Main {
     public static final Logger LOGGER = LogManager.getLogger(Main.class);
 
     public static void main(String[] args) {
-        LOGGER.debug("Starting application...");
+        LOGGER.info("Starting application...");
         try {
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
             Properties p = new Properties();
             InputStream is = loader.getResourceAsStream("dnsapi.properties");
             p.load(is);
-            Config c = new Config(p);
+            NetcenterConfig c = new NetcenterConfig(p);
 
             NetcenterAPI netcenterAPI = new NetcenterAPI("https://www.netcenter.ethz.ch/netcenter/rest/", c.getUsername(), c.getPassword());
 
             GrpcServer s = new GrpcServer(netcenterAPI, c.getIsgGroup());
+
+            LOGGER.info("Completed startup");
             s.serve();
         } catch (JAXBException e) {
-            System.out.println("JAXB error: " + e);
+            LOGGER.error("Uncaught JAXBException: " + e);
         } catch (IOException e) {
-            System.out.println("IOException: " + e);
+            LOGGER.error("Uncaught IOException" + e);
         } catch (Exception e) {
-            System.out.println("Exception: " + e);
+            LOGGER.error("Uncaught Exception: " + e);
         }
     }
 

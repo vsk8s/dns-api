@@ -151,22 +151,22 @@ public class DnsImpl extends DnsImplBase {
     @Override
     public void deleteCNameRecord(Dnsapi.DeleteCNameRecordRequest request, StreamObserver<Dnsapi.EmptyResponse> responseObserver) {
         try {
-            responseObserver.onNext(deleteCNameRecord(request.getAliasName()));
+            responseObserver.onNext(deleteCNameRecord(request.getAlias()));
             responseObserver.onCompleted();
         } catch (StatusException e) {
             responseObserver.onError(e);
         }
     }
 
-    private Dnsapi.EmptyResponse deleteCNameRecord(String aliasName) throws StatusException {
-        LOGGER.debug("Delete CNAME: " + aliasName);
-        if (aliasName == null) {
-            LOGGER.debug("aliasName not given to deleteCNameRecord");
-            throw new StatusException(Status.INVALID_ARGUMENT.withDescription("aliasName required"));
+    private Dnsapi.EmptyResponse deleteCNameRecord(String alias) throws StatusException {
+        LOGGER.debug("Delete CNAME: " + alias);
+        if (alias == null) {
+            LOGGER.debug("alias not given to deleteCNameRecord");
+            throw new StatusException(Status.INVALID_ARGUMENT.withDescription("alias required"));
         }
 
         try {
-            Response<XmlSuccess> response = netcenterAPI.getcNameRecordManager().DeleteCNameRecord(aliasName).execute();
+            Response<XmlSuccess> response = netcenterAPI.getcNameRecordManager().DeleteCNameRecord(alias).execute();
 
             if (!response.isSuccessful()) {
                 String error = response.errorBody().string();
@@ -233,35 +233,60 @@ public class DnsImpl extends DnsImplBase {
     @Override
     public void deleteTxtRecord(Dnsapi.DeleteTxtRecordRequest request, StreamObserver<Dnsapi.EmptyResponse> responseObserver) {
         try {
-            responseObserver.onNext(deleteTxtRecord(request.getId()));
+            responseObserver.onNext(deleteTxtRecord(request.getTxtName(), request.getSubdomain(), request.getValue()));
             responseObserver.onCompleted();
         } catch (StatusException e) {
             responseObserver.onError(e);
         }
     }
 
-    private Dnsapi.EmptyResponse deleteTxtRecord(String id) throws StatusException {
-        LOGGER.debug("Delete TXT " + id);
-        if (id == null) {
-            LOGGER.debug("id not given to deleteTxtRecord");
-            throw new StatusException(Status.INVALID_ARGUMENT.withDescription("id required"));
+    private Dnsapi.EmptyResponse deleteTxtRecord(String txtName, String subdomain, String value) throws StatusException {
+        LOGGER.debug("Delete TXT: " + txtName + "." + subdomain + " -> " + value);
+        if (txtName == null || subdomain == null || value == null) {
+            LOGGER.debug("txtName, subdomain and value not given to createTxtRecord");
+            throw new StatusException(Status.INVALID_ARGUMENT.withDescription("txtName, subdomain and value are required"));
         }
 
-        try {
-            Response<JsonResponse> response = netcenterAPI.getTxtRecordManager().DeleteTxtRecord(id).execute();
+        TxtRecord wantedRecord = TxtRecord.Builder.newBuilder()
+                .withFqName(txtName + "." + subdomain)
+                .withValue(value)
+                .build();
 
-            if (!response.isSuccessful()) {
-                String error = response.errorBody().string();
+        try {
+            Response<TxtResponse> searchTxtRecordResponse = netcenterAPI.getTxtRecordManager().SearchTxtRecord(wantedRecord).execute();
+            if (!searchTxtRecordResponse.isSuccessful()) {
+                LOGGER.error("Searching for txt record id went wrong: " + searchTxtRecordResponse.errorBody().string());
+                throw new StatusException(Status.INTERNAL.withDescription("Error getting txt id"));
+            } else if (searchTxtRecordResponse.body() == null) {
+                LOGGER.error("Empty body in successful call");
+                throw new StatusException(Status.INTERNAL.withDescription("Empty body returned in successful call"));
+            } else if (searchTxtRecordResponse.body().getErrors() != null) {
+                String errorMsg = searchTxtRecordResponse.body().getErrors().stream().map(JsonError::getErrorMsg).collect(Collectors.joining(","));
+                LOGGER.error("Error returned from the netcenter API: " + errorMsg);
+                throw new StatusException(Status.INTERNAL.withDescription("Errors returned by the API: " + errorMsg));
+            } else if (searchTxtRecordResponse.body().getTxtRecord() == null
+                    || searchTxtRecordResponse.body().getTxtRecord().getId() == null) {
+                LOGGER.error("TXT record not found");
+                throw new StatusException(Status.NOT_FOUND.withDescription("TXT record not found"));
+            }
+
+            String txtId = searchTxtRecordResponse.body().getTxtRecord().getId();
+            LOGGER.debug("Got TXT id: " + txtId);
+
+            Response<JsonResponse> deleteTxtResponse = netcenterAPI.getTxtRecordManager().DeleteTxtRecord(txtId).execute();
+
+            if (!deleteTxtResponse.isSuccessful()) {
+                String error = deleteTxtResponse.errorBody().string();
                 LOGGER.debug("Something went wrong: " + error);
                 throw new StatusException(Status.INTERNAL.withDescription("Something went wrong: " + error));
-            } else if (response.body().getErrors() != null) {
-                String errorMsg = response.body().getErrors().stream().map(JsonError::getErrorMsg).collect(Collectors.joining(", "));
+            } else if (deleteTxtResponse.body().getErrors() != null) {
+                String errorMsg = deleteTxtResponse.body().getErrors().stream().map(JsonError::getErrorMsg).collect(Collectors.joining(", "));
                 LOGGER.debug("Something went wrong: " + errorMsg);
-                throw new StatusException(Status.INTERNAL.withDescription("Got errors from the API: " + errorMsg));
+                throw new StatusException(Status.INTERNAL.withDescription("API reported error: " + errorMsg));
             }
         } catch (IOException e) {
             LOGGER.error("Unexpected exception: " + e);
-            throw new StatusException(Status.INTERNAL.withDescription("error relaying request to API"));
+            throw new StatusException(Status.INTERNAL.withDescription("Error relaying request to API"));
         }
 
         return Dnsapi.EmptyResponse.getDefaultInstance();

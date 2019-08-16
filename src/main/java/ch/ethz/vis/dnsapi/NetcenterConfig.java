@@ -6,8 +6,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Properties;
 
-public class Config {
-    private static final Logger LOGGER = LogManager.getLogger(Config.class);
+public class NetcenterConfig {
+    private static final Logger LOGGER = LogManager.getLogger(NetcenterConfig.class);
 
     private static final String NETCENTER_USERNAME_KEY = "ch.ethz.vis.dnsapi.netcenter.username";
     private static final String NETCENTER_PASSWORD_KEY = "ch.ethz.vis.dnsapi.netcenter.password";
@@ -17,7 +17,7 @@ public class Config {
     private String password;
     private String isgGroup;
 
-    public Config(Properties p) throws InitializationException {
+    public NetcenterConfig(Properties p) throws InitializationException {
         readProperties(p);
     }
 

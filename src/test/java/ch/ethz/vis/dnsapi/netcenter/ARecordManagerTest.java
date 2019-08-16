@@ -25,7 +25,7 @@ public class ARecordManagerTest {
         server.requireClientAuth();
 
         // Testing GET
-        server.enqueue(new MockResponse().setResponseCode(200).setBody("<usedIps><usedIp><ip>192.0.2.10</ip><ipSubnet>192.0.2.0</ipSubnet><fqname>compute0.vis.ethz.ch</fqname><forward>Y</forward><reverse>Y</reverse><ttl>3600</ttl><dhcp>N</dhcp><ddns>N</ddns><isgGroup>adm-vis</isgGroup><lastDetection>2019-07-23 22:06</lastDetection><ipVersion>v4</ipVersion><views><view>extern</view><view>intern</view></views></usedIp></usedIps>"));
+        server.enqueue(new MockResponse().setResponseCode(200).setBody("<usedIps><usedIp><ip>192.0.2.10</ip><ipSubnet>192.0.2.0</ipSubnet><fqname>some.server.some.tld</fqname><forward>Y</forward><reverse>Y</reverse><ttl>3600</ttl><dhcp>N</dhcp><ddns>N</ddns><isgGroup>adm-vis</isgGroup><lastDetection>2019-07-23 22:06</lastDetection><ipVersion>v4</ipVersion><views><view>extern</view><view>intern</view></views></usedIp></usedIps>"));
         server.enqueue(new MockResponse().setResponseCode(200).setBody("<usedIps></usedIps>"));
         server.enqueue(new MockResponse().setResponseCode(500).setBody("<errors><error>Some internal error occurred!</error></errors>"));
 
@@ -50,13 +50,13 @@ public class ARecordManagerTest {
     @Test
     @Order(1)
     public void testGetARecord() throws Exception {
-        Response<GetARecordResponse> response = aRecordManager.GetARecord("compute0.vis.ethz.ch").execute();
+        Response<GetARecordResponse> response = aRecordManager.GetARecord("some.server.some.tld").execute();
         assertTrue(response.isSuccessful());
         assertNotNull(response.body());
 
         GetARecordResponse resp = response.body();
         ARecord first = resp.getRecords().get(0);
-        assertEquals("compute0.vis.ethz.ch", first.getFqName());
+        assertEquals("some.server.some.tld", first.getFqName());
         assertEquals("v4", first.getIpVersion());
         assertEquals("192.0.2.10", first.getIp());
         assertEquals("192.0.2.0", first.getIpSubnet());
@@ -77,6 +77,7 @@ public class ARecordManagerTest {
         response = aRecordManager.GetARecord("something.some.tld").execute();
         assertFalse(response.isSuccessful());
         assertNull(response.body());
+        assertNotNull(response.errorBody());
     }
 
     @Test

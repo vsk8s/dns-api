@@ -164,4 +164,117 @@ public class ARecord {
     public void setIpVersion(String ipVersion) {
         this.ipVersion = ipVersion;
     }
+
+    public static final class Builder {
+        private String ip;
+        private String ipVersion;
+        private String fqName;
+        private String ipSubnet;
+        private Boolean forward;
+        private Boolean reverse;
+        private int ttl;
+        private Boolean dhcp;
+        private String dhcpMac;
+        private Boolean ddns;
+        private String isgGroup;
+        private String lastDetection;
+        private List<String> views;
+        private String remark;
+
+        private Builder() {
+        }
+
+        public static Builder newBuilder() {
+            return new Builder();
+        }
+
+        public Builder withIp(String ip) {
+            this.ip = ip;
+            return this;
+        }
+
+        public Builder withIpVersion(String ipVersion) {
+            this.ipVersion = ipVersion;
+            return this;
+        }
+
+        public Builder withFqName(String fqName) {
+            this.fqName = fqName;
+            return this;
+        }
+
+        public Builder withIpSubnet(String ipSubnet) {
+            this.ipSubnet = ipSubnet;
+            return this;
+        }
+
+        public Builder withForward(Boolean forward) {
+            this.forward = forward;
+            return this;
+        }
+
+        public Builder withReverse(Boolean reverse) {
+            this.reverse = reverse;
+            return this;
+        }
+
+        public Builder withTtl(int ttl) {
+            this.ttl = ttl;
+            return this;
+        }
+
+        public Builder withDhcp(Boolean dhcp) {
+            this.dhcp = dhcp;
+            return this;
+        }
+
+        public Builder withDhcpMac(String dhcpMac) {
+            this.dhcpMac = dhcpMac;
+            return this;
+        }
+
+        public Builder withDdns(Boolean ddns) {
+            this.ddns = ddns;
+            return this;
+        }
+
+        public Builder withIsgGroup(String isgGroup) {
+            this.isgGroup = isgGroup;
+            return this;
+        }
+
+        public Builder withLastDetection(String lastDetection) {
+            this.lastDetection = lastDetection;
+            return this;
+        }
+
+        public Builder withViews(List<String> views) {
+            this.views = views;
+            return this;
+        }
+
+        public Builder withRemark(String remark) {
+            this.remark = remark;
+            return this;
+        }
+
+        public ARecord build() {
+            ARecord aRecord = new ARecord();
+            aRecord.setIp(ip);
+            aRecord.setIpVersion(ipVersion);
+            aRecord.setFqName(fqName);
+            aRecord.setIpSubnet(ipSubnet);
+            aRecord.setForward(forward);
+            aRecord.setReverse(reverse);
+            aRecord.setTtl(ttl);
+            aRecord.setDhcp(dhcp);
+            aRecord.setDhcpMac(dhcpMac);
+            aRecord.setDdns(ddns);
+            aRecord.setIsgGroup(isgGroup);
+            aRecord.setLastDetection(lastDetection);
+            aRecord.setViews(views);
+            aRecord.setRemark(remark);
+            return aRecord;
+        }
+    }
 }

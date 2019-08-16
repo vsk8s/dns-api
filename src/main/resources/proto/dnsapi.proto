@@ -27,8 +27,7 @@ message CreateCNameRecordRequest {
 }
 
 message DeleteCNameRecordRequest {
-    string hostname = 1;
-    string aliasName = 2;
+    string alias = 1; // required
 }
 
 message CreateTxtRecordRequest {
@@ -39,7 +38,9 @@ message CreateTxtRecordRequest {
 }
 
 message DeleteTxtRecordRequest {
-    string id = 1; // required
+    string value = 1; // required
+    string txtName = 2; // required
+    string subdomain = 3; // required
 }
 
 message EmptyResponse {}

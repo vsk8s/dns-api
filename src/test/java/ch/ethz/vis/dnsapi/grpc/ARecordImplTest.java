@@ -88,14 +88,6 @@ public class ARecordImplTest extends DnsImplBase {
         Dnsapi.EmptyResponse response = stub.deleteARecord(request);
     }
 
-    //@org.junit.Test
-    //public void successfullyGetARecord() {
-    //    StringWriter mockResponseBodyWriter = new StringWriter();
-    //    JAXB.marshal(defaultARecordResponse(), mockResponseBodyWriter);
-    //    mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody(mockResponseBodyWriter.toString()));
-    //
-    //}
-
     private Dnsapi.CreateARecordRequest.Builder defaultCreateARecordRequest() {
         return Dnsapi.CreateARecordRequest.newBuilder()
                 .setIp(IP)
@@ -107,20 +99,6 @@ public class ARecordImplTest extends DnsImplBase {
                 .setHostname(IP_NAME + "." + SUBDOMAIN)
                 .setIp(IP);
     }
-
-    //private GetARecordResponse defaultARecordResponse() {
-    //    ARecord record = ARecord.Builder.newBuilder()
-    //            .withIp(IP)
-    //            .withFqName(IP_NAME + "." + SUBDOMAIN)
-    //            .withIpSubnet(IP_SUBNET)
-    //            .withIsgGroup(DEFAULT_ISG)
-    //            .build();
-    //    GetARecordResponse response = new GetARecordResponse();
-    //    List<ARecord> recordList = new ArrayList<>();
-    //    recordList.add(record);
-    //    response.setRecords(recordList);
-
-    //}
 
     private void assertRequiredFieldsSet(CreateARecordRequest request) {
         org.junit.Assert.assertEquals(IP, request.getIp());

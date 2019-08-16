@@ -17,7 +17,7 @@ public class GetARecordResponse {
         return records;
     }
 
-    private void setRecords(List<ARecord> records) {
+    public void setRecords(List<ARecord> records) {
         this.records = records;
     }
 }

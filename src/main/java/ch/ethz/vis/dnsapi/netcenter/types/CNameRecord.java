@@ -96,4 +96,75 @@ public class CNameRecord {
     private void setLastChange(String lastChange) {
         this.lastChange = lastChange;
     }
+
+    public static final class Builder {
+        private String fqName;
+        private String hostname;
+        private int ttl;
+        private String isgGroup;
+        private String lastChange;
+        private String lastChangeBy;
+        private List<String> views;
+        private String remark;
+
+        private Builder() {
+        }
+
+        public static Builder newBuilder() {
+            return new Builder();
+        }
+
+        public Builder withFqName(String fqName) {
+            this.fqName = fqName;
+            return this;
+        }
+
+        public Builder withHostname(String hostname) {
+            this.hostname = hostname;
+            return this;
+        }
+
+        public Builder withTtl(int ttl) {
+            this.ttl = ttl;
+            return this;
+        }
+
+        public Builder withIsgGroup(String isgGroup) {
+            this.isgGroup = isgGroup;
+            return this;
+        }
+
+        public Builder withLastChange(String lastChange) {
+            this.lastChange = lastChange;
+            return this;
+        }
+
+        public Builder withLastChangeBy(String lastChangeBy) {
+            this.lastChangeBy = lastChangeBy;
+            return this;
+        }
+
+        public Builder withViews(List<String> views) {
+            this.views = views;
+            return this;
+        }
+
+        public Builder withRemark(String remark) {
+            this.remark = remark;
+            return this;
+        }
+
+        public CNameRecord build() {
+            CNameRecord cNameRecord = new CNameRecord();
+            cNameRecord.setHostname(hostname);
+            cNameRecord.setTtl(ttl);
+            cNameRecord.setIsgGroup(isgGroup);
+            cNameRecord.setViews(views);
+            cNameRecord.setRemark(remark);
+            cNameRecord.fqName = this.fqName;
+            cNameRecord.lastChangeBy = this.lastChangeBy;
+            cNameRecord.lastChange = this.lastChange;
+            return cNameRecord;
+        }
+    }
 }

@@ -95,7 +95,7 @@ public class CNameRecordImplTest extends DnsImplBase {
     }
     private Dnsapi.DeleteCNameRecordRequest.Builder defaultDeleteCNameRecordRequest() {
         return Dnsapi.DeleteCNameRecordRequest.newBuilder()
-                .setAliasName(ALIAS_NAME + "." + SUBDOMAIN);
+                .setAlias(ALIAS_NAME + "." + SUBDOMAIN);
     }
 
     private void assertRequiredFieldsSet(CreateCNameRecordRequest request) {
