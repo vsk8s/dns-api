@@ -253,7 +253,7 @@ public class DnsImpl extends DnsImplBase {
             Response<TxtResponse> response = netcenterAPI.getTxtRecordManager().SearchTxtRecord(request).execute();
 
             TxtRecord record = checkTxtJsonResponse(response);
-            if (record.getId() == null || record.getFqName() == null || record.getIsgGroup() == null || record.getViews() == null) {
+            if (record.getId() == null || record.getFqName() == null) {
                 LOGGER.debug("Got empty record");
                 throw new StatusException(Status.NOT_FOUND.withDescription("TXT record not found"));
             }
@@ -262,8 +262,8 @@ public class DnsImpl extends DnsImplBase {
                     .setFqName(record.getFqName())
                     .setValue(record.getValue())
                     .setOptions(Dnsapi.RecordOptions.newBuilder()
-                            .setIsgGroup(record.getIsgGroup())
                             .setTtl(record.getTtl())
+                            .setIsgGroup(record.getIsgGroup())
                             .setExternallyViewable(record.getViews().contains("extern"))
                             .build())
                     .build();

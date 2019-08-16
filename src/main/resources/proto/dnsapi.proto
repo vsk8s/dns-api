@@ -52,7 +52,7 @@ message EmptyResponse {}
 message TxtResponse {
     string value = 1; // always set
     string fqName = 2; // always set
-    RecordOptions options = 3; // always set
+    RecordOptions options = 3; // always set, isgGroup is not returned
 }
 
 service Dns {
@@ -63,6 +63,8 @@ service Dns {
     rpc DeleteCNameRecord (DeleteCNameRecordRequest) returns (EmptyResponse);
 
     rpc CreateTxtRecord (CreateTxtRecordRequest) returns (EmptyResponse);
+
+    // Does not return information about the ISG group the record belongs to, because why not.
     rpc SearchTxtRecord (SearchTxtRecordRequest) returns (TxtResponse);
     rpc DeleteTxtRecord (DeleteTxtRecordRequest) returns (EmptyResponse);
 }

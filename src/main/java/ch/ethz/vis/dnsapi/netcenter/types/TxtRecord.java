@@ -17,13 +17,13 @@ public class TxtRecord {
     // creating new records via POST you have to use "txtValue".
     @JsonProperty("txtValue")
     @JsonAlias({"value"})
-    private String value;
+    private String value = "";
 
     @JsonProperty("fqName")
-    private String fqName;
+    private String fqName = "";
 
     @JsonProperty("netsupName")
-    private String isgGroup;
+    private String isgGroup = "";
 
     @JsonProperty("ttl")
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
@@ -33,7 +33,7 @@ public class TxtRecord {
     private List<String> views;
 
     @JsonProperty("remark")
-    private String remark;
+    private String remark = "";
 
     public String getId() {
         return id;
