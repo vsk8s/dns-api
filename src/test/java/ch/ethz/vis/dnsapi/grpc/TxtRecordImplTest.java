@@ -6,13 +6,11 @@ import ch.ethz.vis.dnsapi.netcenter.types.SearchTxtRecordRequest;
 import ch.ethz.vis.dnsapi.netcenter.types.TxtRecord;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.grpc.StatusRuntimeException;
-import okhttp3.Dns;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.RecordedRequest;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.lang.invoke.VarHandle;
 
 public class TxtRecordImplTest extends DnsImplBase {
     private static final String ID = "123456";
@@ -99,6 +97,23 @@ public class TxtRecordImplTest extends DnsImplBase {
         org.junit.Assert.assertEquals(TXT_NAME + "." + DEFAULT_SUBDOMAIN, generatedRequest.getFqName());
     }
 
+    @org.junit.Test(expected = StatusRuntimeException.class)
+    public void searchTxtRecordWithoutResult() throws InterruptedException, IOException {
+        StringWriter mockResponseBody = new StringWriter();
+        TxtRecord record = TxtRecord.Builder.newBuilder()
+                .withId(null)
+                .withFqName(null)
+                .build();
+        mapper.writeValue(mockResponseBody, record);
+
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody(mockResponseBody.toString()));
+
+        Dnsapi.SearchTxtRecordRequest request = Dnsapi.SearchTxtRecordRequest.newBuilder()
+                .setFqName(TXT_NAME + "." + DEFAULT_SUBDOMAIN)
+                .build();
+
+        Dnsapi.TxtResponse response = stub.searchTxtRecord(request);
+    }
 
     @org.junit.Test
     public void successfullyDeleteTxtRecord() throws InterruptedException, IOException {
@@ -157,6 +172,26 @@ public class TxtRecordImplTest extends DnsImplBase {
         org.junit.Assert.assertEquals(ID, record.getId());
         org.junit.Assert.assertEquals(VALUE, record.getValue());
         org.junit.Assert.assertEquals(TXT_NAME + "." + DEFAULT_SUBDOMAIN, record.getFqName());
+
+        RecordedRequest deletionRequest = mockWebServer.takeRequest();
+        JsonResponse deletionResponse = mapper.readValue(deletionRequest.getBody().inputStream(), JsonResponse.class);
+    }
+
+    @org.junit.Test(expected = StatusRuntimeException.class)
+    public void tryDeleteAbsentTxtRecordWithWildcardPresent() throws InterruptedException, IOException {
+        mockWebServer.enqueue(new MockResponse().setResponseCode(200).setBody("{\"id\":\"" + ID + "\",\"fqName\":\"" + "*." + DEFAULT_SUBDOMAIN + "\",\"value\":\"" + VALUE + "\",\"netsupName\":\"" + DEFAULT_ISG + "\"}"));
+
+        Dnsapi.DeleteTxtRecordRequest request = defaultDeleteTxtRecordRequest().build();
+
+        Dnsapi.EmptyResponse response = stub.deleteTxtRecord(request);
+        org.junit.Assert.assertNotNull(response);
+
+        RecordedRequest findIdRequest = mockWebServer.takeRequest();
+        TxtRecord record = mapper.readValue(findIdRequest.getBody().inputStream(), TxtRecord.class);
+        org.junit.Assert.assertNotNull(record);
+        org.junit.Assert.assertEquals(ID, record.getId());
+        org.junit.Assert.assertEquals(VALUE, record.getValue());
+        org.junit.Assert.assertEquals("*." + DEFAULT_SUBDOMAIN, record.getFqName());
 
         RecordedRequest deletionRequest = mockWebServer.takeRequest();
         JsonResponse deletionResponse = mapper.readValue(deletionRequest.getBody().inputStream(), JsonResponse.class);
