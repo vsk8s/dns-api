@@ -53,6 +53,7 @@ public class Main {
     private static NetcenterConfig loadProperties(InputStream is) throws IOException, InitializationException {
         Properties p = new Properties();
         p.load(is);
+        is.close();
         return new NetcenterConfig(p);
     }
 
