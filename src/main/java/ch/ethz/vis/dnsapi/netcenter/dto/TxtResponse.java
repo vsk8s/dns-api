@@ -1,15 +1,16 @@
-package ch.ethz.vis.dnsapi.netcenter.types;
+package ch.ethz.vis.dnsapi.netcenter.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 import java.util.List;
 
-public class JsonResponse {
+public class TxtResponse {
     @JsonProperty(value = "errors", required = false)
     private List<JsonError> errors;
 
-    @JsonProperty(value = "status", required = false)
-    private String status;
+    @JsonUnwrapped
+    private TxtRecord txtRecord;
 
     public List<JsonError> getErrors() {
         return errors;
@@ -19,11 +20,11 @@ public class JsonResponse {
         this.errors = errors;
     }
 
-    public String getStatus() {
-        return status;
+    public TxtRecord getTxtRecord() {
+        return txtRecord;
     }
 
-    private void setStatus(String status) {
-        this.status = status;
+    private void setTxtRecord(TxtRecord txtRecord) {
+        this.txtRecord = txtRecord;
     }
 }

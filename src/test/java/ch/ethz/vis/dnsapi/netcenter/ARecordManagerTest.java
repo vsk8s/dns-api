@@ -1,6 +1,6 @@
 package ch.ethz.vis.dnsapi.netcenter;
 
-import ch.ethz.vis.dnsapi.netcenter.types.*;
+import ch.ethz.vis.dnsapi.netcenter.dto.*;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.*;

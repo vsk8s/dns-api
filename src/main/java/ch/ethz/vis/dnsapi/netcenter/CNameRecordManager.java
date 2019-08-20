@@ -1,8 +1,8 @@
 package ch.ethz.vis.dnsapi.netcenter;
 
-import ch.ethz.vis.dnsapi.netcenter.types.XmlCreateCNameRecordRequestWrapper;
-import ch.ethz.vis.dnsapi.netcenter.types.GetCNameRecordResponse;
-import ch.ethz.vis.dnsapi.netcenter.types.XmlSuccess;
+import ch.ethz.vis.dnsapi.netcenter.dto.XmlCreateCNameRecordRequestWrapper;
+import ch.ethz.vis.dnsapi.netcenter.dto.GetCNameRecordResponse;
+import ch.ethz.vis.dnsapi.netcenter.dto.XmlSuccess;
 import retrofit2.Call;
 import retrofit2.http.*;
 

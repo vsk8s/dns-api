@@ -1,4 +1,4 @@
-package ch.ethz.vis.dnsapi.netcenter.types;
+package ch.ethz.vis.dnsapi.netcenter.dto;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;

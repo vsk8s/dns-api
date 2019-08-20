@@ -1,9 +1,9 @@
 package ch.ethz.vis.dnsapi.grpc;
 
-import ch.ethz.vis.dnsapi.netcenter.types.CreateTxtRecordRequest;
-import ch.ethz.vis.dnsapi.netcenter.types.JsonResponse;
-import ch.ethz.vis.dnsapi.netcenter.types.SearchTxtRecordRequest;
-import ch.ethz.vis.dnsapi.netcenter.types.TxtRecord;
+import ch.ethz.vis.dnsapi.netcenter.dto.CreateTxtRecordRequest;
+import ch.ethz.vis.dnsapi.netcenter.dto.JsonResponse;
+import ch.ethz.vis.dnsapi.netcenter.dto.SearchTxtRecordRequest;
+import ch.ethz.vis.dnsapi.netcenter.dto.TxtRecord;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.grpc.StatusRuntimeException;
 import okhttp3.mockwebserver.MockResponse;

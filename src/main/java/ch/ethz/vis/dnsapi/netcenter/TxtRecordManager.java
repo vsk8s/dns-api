@@ -1,6 +1,6 @@
 package ch.ethz.vis.dnsapi.netcenter;
 
-import ch.ethz.vis.dnsapi.netcenter.types.*;
+import ch.ethz.vis.dnsapi.netcenter.dto.*;
 import retrofit2.Call;
 import retrofit2.http.*;
 

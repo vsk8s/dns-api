@@ -1,7 +1,7 @@
 package ch.ethz.vis.dnsapi.grpc;
 
-import ch.ethz.vis.dnsapi.netcenter.types.CreateCNameRecordRequest;
-import ch.ethz.vis.dnsapi.netcenter.types.XmlCreateCNameRecordRequestWrapper;
+import ch.ethz.vis.dnsapi.netcenter.dto.CreateCNameRecordRequest;
+import ch.ethz.vis.dnsapi.netcenter.dto.XmlCreateCNameRecordRequestWrapper;
 import io.grpc.StatusRuntimeException;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.RecordedRequest;

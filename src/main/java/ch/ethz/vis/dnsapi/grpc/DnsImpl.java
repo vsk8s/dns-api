@@ -2,7 +2,7 @@ package ch.ethz.vis.dnsapi.grpc;
 
 import ch.ethz.vis.dnsapi.grpc.DnsGrpc.DnsImplBase;
 import ch.ethz.vis.dnsapi.netcenter.NetcenterAPI;
-import ch.ethz.vis.dnsapi.netcenter.types.*;
+import ch.ethz.vis.dnsapi.netcenter.dto.*;
 import ch.ethz.vis.dnsapi.util.SupplierWithExceptions;
 import io.grpc.Status;
 import io.grpc.StatusException;
@@ -112,7 +112,7 @@ public class DnsImpl extends DnsImplBase {
                 .withReverse(false) // FIXME: Find sensible defaults.
                 .build();
 
-        return checkResponse(() -> netcenterAPI.getaRecordManager().CreateARecord(
+        return checkResponse(() -> netcenterAPI.getARecordManager().CreateARecord(
                 new XmlCreateARecordRequestWrapper(request)).execute());
     }
 
@@ -120,7 +120,7 @@ public class DnsImpl extends DnsImplBase {
         LOG.debug("Delete A: " + fqName + " -> " + ip);
         checkParameterPresence(ip, "ip");
         checkParameterPresence(fqName, "fqName");
-        return checkResponse(() -> netcenterAPI.getaRecordManager().DeleteARecord(ip, fqName).execute());
+        return checkResponse(() -> netcenterAPI.getARecordManager().DeleteARecord(ip, fqName).execute());
     }
 
     private Dnsapi.EmptyResponse createCNameRecord(String hostname, String aliasName, String subdomain, Dnsapi.RecordOptions options) throws StatusException {
@@ -139,14 +139,14 @@ public class DnsImpl extends DnsImplBase {
                 .withTtl(options.getTtl() > 0 ? options.getTtl() : DEFAULT_TTL)
                 .build();
 
-        return checkResponse(() -> netcenterAPI.getcNameRecordManager().CreateCNameRecord(
+        return checkResponse(() -> netcenterAPI.getCNameRecordManager().CreateCNameRecord(
                 new XmlCreateCNameRecordRequestWrapper(request)).execute());
     }
 
     private Dnsapi.EmptyResponse deleteCNameRecord(String alias) throws StatusException {
         LOG.debug("Delete CNAME: " + alias);
         checkParameterPresence(alias, "alias");
-        return checkResponse(() -> netcenterAPI.getcNameRecordManager().DeleteCNameRecord(alias).execute());
+        return checkResponse(() -> netcenterAPI.getCNameRecordManager().DeleteCNameRecord(alias).execute());
     }
 
     private Dnsapi.EmptyResponse createTxtRecord(String txtName, String subdomain, String value, Dnsapi.RecordOptions options) throws StatusException {

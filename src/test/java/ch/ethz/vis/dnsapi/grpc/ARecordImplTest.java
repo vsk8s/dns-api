@@ -1,7 +1,7 @@
 package ch.ethz.vis.dnsapi.grpc;
 
-import ch.ethz.vis.dnsapi.netcenter.types.CreateARecordRequest;
-import ch.ethz.vis.dnsapi.netcenter.types.XmlCreateARecordRequestWrapper;
+import ch.ethz.vis.dnsapi.netcenter.dto.CreateARecordRequest;
+import ch.ethz.vis.dnsapi.netcenter.dto.XmlCreateARecordRequestWrapper;
 import io.grpc.StatusRuntimeException;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.RecordedRequest;

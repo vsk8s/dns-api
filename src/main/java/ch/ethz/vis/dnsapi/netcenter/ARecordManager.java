@@ -1,8 +1,8 @@
 package ch.ethz.vis.dnsapi.netcenter;
 
-import ch.ethz.vis.dnsapi.netcenter.types.GetARecordResponse;
-import ch.ethz.vis.dnsapi.netcenter.types.XmlCreateARecordRequestWrapper;
-import ch.ethz.vis.dnsapi.netcenter.types.XmlSuccess;
+import ch.ethz.vis.dnsapi.netcenter.dto.GetARecordResponse;
+import ch.ethz.vis.dnsapi.netcenter.dto.XmlCreateARecordRequestWrapper;
+import ch.ethz.vis.dnsapi.netcenter.dto.XmlSuccess;
 import retrofit2.Call;
 import retrofit2.http.*;
 

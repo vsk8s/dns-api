@@ -1,4 +1,4 @@
-package ch.ethz.vis.dnsapi.netcenter.types;
+package ch.ethz.vis.dnsapi.netcenter.dto;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
