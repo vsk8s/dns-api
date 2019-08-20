@@ -1,5 +1,6 @@
 package ch.ethz.vis.dnsapi;
 
+import ch.ethz.vis.dnsapi.exceptions.InitializationException;
 import ch.ethz.vis.dnsapi.grpc.GrpcServer;
 import ch.ethz.vis.dnsapi.netcenter.NetcenterAPI;
 import org.apache.logging.log4j.LogManager;
@@ -11,30 +12,53 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class Main {
-    public static final Logger LOGGER = LogManager.getLogger(Main.class);
+
+    private static final Logger LOG = LogManager.getLogger(Main.class);
 
     public static void main(String[] args) {
-        LOGGER.info("Starting application...");
+        LOG.info("Starting application...");
+
         try {
-            ClassLoader loader = Thread.currentThread().getContextClassLoader();
-            Properties p = new Properties();
-            InputStream is = loader.getResourceAsStream("dnsapi.properties");
-            p.load(is);
-            NetcenterConfig c = new NetcenterConfig(p);
-
-            NetcenterAPI netcenterAPI = new NetcenterAPI("https://www.netcenter.ethz.ch/netcenter/rest/", c.getUsername(), c.getPassword());
-
-            GrpcServer s = new GrpcServer(netcenterAPI, c.getIsgGroup());
-
-            LOGGER.info("Completed startup");
-            s.serve();
-        } catch (JAXBException e) {
-            LOGGER.error("Uncaught JAXBException: " + e);
-        } catch (IOException e) {
-            LOGGER.error("Uncaught IOException" + e);
+            runApplication();
         } catch (Exception e) {
-            LOGGER.error("Uncaught Exception: " + e);
+            LOG.error("Uncaught", e);
         }
+    }
+
+    private static void runApplication() throws IOException, InitializationException, JAXBException {
+        NetcenterConfig config = loadConfiguration();
+        GrpcServer s = instantiateServer(config);
+
+        LOG.info("Completed startup");
+        s.serve();
+    }
+
+    private static NetcenterConfig loadConfiguration() throws IOException, InitializationException {
+        InputStream is = openPropertiesFile();
+        if (is != null) {
+            return loadProperties(is);
+        } else {
+            throw new IOException("config not found");
+        }
+    }
+
+    private static GrpcServer instantiateServer(NetcenterConfig config) throws JAXBException {
+        NetcenterAPI netcenterAPI = new NetcenterAPI("https://www.netcenter.ethz.ch/netcenter/rest/",
+                config.getUsername(),
+                config.getPassword());
+
+        return new GrpcServer(netcenterAPI, config.getIsgGroup());
+    }
+
+    private static NetcenterConfig loadProperties(InputStream is) throws IOException, InitializationException {
+        Properties p = new Properties();
+        p.load(is);
+        return new NetcenterConfig(p);
+    }
+
+    private static InputStream openPropertiesFile() {
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        return loader.getResourceAsStream("dnsapi.properties");
     }
 
     void unusedButMaybeUseful() {
