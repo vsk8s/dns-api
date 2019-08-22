@@ -7,6 +7,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.xml.bind.JAXBException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -14,6 +16,8 @@ import java.util.Properties;
 public class Main {
 
     private static final Logger LOG = LogManager.getLogger(Main.class);
+
+    private static final String ENVIRONMENT_CONFIG_FILE = "ch.ethz.vis.dnsapi.config";
 
     public static void main(String[] args) {
         LOG.info("Starting application...");
@@ -35,11 +39,7 @@ public class Main {
 
     private static Config loadConfiguration() throws IOException, InitializationException {
         InputStream is = openPropertiesFile();
-        if (is != null) {
-            return loadProperties(is);
-        } else {
-            throw new IOException("config not found");
-        }
+        return loadProperties(is);
     }
 
     private static GrpcServer instantiateServer(Config config) throws JAXBException {
@@ -60,9 +60,9 @@ public class Main {
         return new Config(p);
     }
 
-    private static InputStream openPropertiesFile() {
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        return loader.getResourceAsStream("dnsapi.properties");
+    private static InputStream openPropertiesFile() throws FileNotFoundException {
+        String path = System.getProperty(ENVIRONMENT_CONFIG_FILE, "/etc/dnsapi.properties");
+        return new FileInputStream(path);
     }
 
     void unusedButMaybeUseful() {
