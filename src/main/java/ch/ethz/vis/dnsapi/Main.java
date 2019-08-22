@@ -26,14 +26,14 @@ public class Main {
     }
 
     private static void runApplication() throws IOException, InitializationException, JAXBException {
-        NetcenterConfig config = loadConfiguration();
+        Config config = loadConfiguration();
         GrpcServer s = instantiateServer(config);
 
         LOG.info("Completed startup");
         s.serve();
     }
 
-    private static NetcenterConfig loadConfiguration() throws IOException, InitializationException {
+    private static Config loadConfiguration() throws IOException, InitializationException {
         InputStream is = openPropertiesFile();
         if (is != null) {
             return loadProperties(is);
@@ -42,19 +42,22 @@ public class Main {
         }
     }
 
-    private static GrpcServer instantiateServer(NetcenterConfig config) throws JAXBException {
+    private static GrpcServer instantiateServer(Config config) throws JAXBException {
         NetcenterAPI netcenterAPI = new NetcenterAPI("https://www.netcenter.ethz.ch/netcenter/rest/",
                 config.getUsername(),
                 config.getPassword());
 
-        return new GrpcServer(netcenterAPI, config.getIsgGroup());
+        return new GrpcServer(netcenterAPI,
+                config.getIsgGroup(),
+                config.getCertFilePath(),
+                config.getKeyFilePath());
     }
 
-    private static NetcenterConfig loadProperties(InputStream is) throws IOException, InitializationException {
+    private static Config loadProperties(InputStream is) throws IOException, InitializationException {
         Properties p = new Properties();
         p.load(is);
         is.close();
-        return new NetcenterConfig(p);
+        return new Config(p);
     }
 
     private static InputStream openPropertiesFile() {
