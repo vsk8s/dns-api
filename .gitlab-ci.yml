@@ -17,7 +17,6 @@ build:
   stage: build
   before_script:
     - apt update || /bin/true
-    - apt install -y --no-install-recommends -t stretch-backports openjdk-11-jdk-headless || /bin/true
     - apt install -y --no-install-recommends maven-debian-helper maven || /bin/true
   script:
     - mvn compile
