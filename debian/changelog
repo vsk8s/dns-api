@@ -1,4 +1,10 @@
-dns-api (1.0-SNAPSHOT-1) UNRELEASED; urgency=medium
+dns-api (1.0-SNAPSHOT-2) unstable; urgency=medium
+
+  * Fix java 11 runtime dependency
+
+ -- Maximilian Falkenstein <mfalkenstein@sos.ethz.ch>  Sun, 25 Aug 2019 13:59:27 +0200
+
+dns-api (1.0-SNAPSHOT-1) unstable; urgency=medium
 
   * Initial release
 

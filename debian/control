@@ -11,7 +11,7 @@ Homepage: https://git.sos.ethz.ch/k8s/dns-api
 
 Package: dns-api
 Architecture: all
-Depends: ${misc:Depends}, ${maven:Depends}, default-jdk (>= 2:1.11)
+Depends: ${misc:Depends}, ${maven:Depends}, default-jre (>= 2:1.11) | openjdk-11-jre-headless
 Suggests: ${maven:OptionalDepends}
 Description: dnsapi
  A GRPC API for creating DNS records via the ETH netcenter.
