@@ -3,7 +3,7 @@ Section: java
 Priority: optional
 Maintainer: Maximilian Falkenstein <mfalkenstein@sos.ethz.ch>
 Uploaders: Maximilian Falkenstein <mfalkenstein@sos.ethz.ch>
-Build-Depends: debhelper (>= 11), default-jdk, maven-debian-helper (>= 2.1)
+Build-Depends: debhelper, maven-debian-helper
 Standards-Version: 4.2.1
 Vcs-Git: https://git.sos.ethz.ch/k8s/dns-api.git
 Vcs-Browser: https://git.sos.ethz.ch/k8s/dns-api
