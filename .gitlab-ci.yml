@@ -21,8 +21,26 @@ build:
   script:
     - mvn compile
 
+build-package:
+  stage: build
+  before_script:
+    - apt update || /bin/true
+    - apt install -y --no-install-recommends maven-debian-helper maven || /bin/true
+  script:
+    - dpkg-buildpackage -b -us -uc
+    - mkdir debbuild
+    - mv ../*.deb debbuild/
+  artifacts:
+    paths:
+      - debbuild/*
+  only:
+    - tags
+
 test:
   stage: test
+  before_script:
+    - apt update || /bin/true
+    - apt install -y --no-install-recommends maven-debian-helper maven || /bin/true
   script:
     - mvn test
 
