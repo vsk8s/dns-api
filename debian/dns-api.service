@@ -1,0 +1,16 @@
+[Unit]
+Description=ETH Netcenter DNS API service
+After=network-online.target
+ConditionFileNotEmpty=/etc/dnsapi/dnsapi.properties
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/java -jar /usr/share/java/dnsapi.jar
+User=dnsapi
+WorkingDirectory=/var/lib/dnsapi
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/dnsapi /var/log/dnsapi
+
+[Install]
+WantedBy=multi-user.target

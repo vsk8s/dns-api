@@ -61,7 +61,7 @@ public class Main {
     }
 
     private static InputStream openPropertiesFile() throws FileNotFoundException {
-        String path = System.getProperty(ENVIRONMENT_CONFIG_FILE, "/etc/dnsapi.properties");
+        String path = System.getProperty(ENVIRONMENT_CONFIG_FILE, "/etc/dnsapi/dnsapi.properties");
         return new FileInputStream(path);
     }
 

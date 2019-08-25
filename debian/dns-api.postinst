@@ -1,0 +1,26 @@
+#!/bin/sh
+
+set -e
+case "$1" in
+    configure)
+        if ! getent passwd dnsapi > /dev/null ; then
+            echo 'Adding system-user for dnsapi' 1>&2
+            adduser --system --group --home /var/lib/dnsapi \
+                    --disabled-login --force-badname dnsapi > /dev/null
+        fi
+
+        if [ ! -d /etc/dnsapi ] ; then
+        	mkdir /etc/dnsapi
+        	chown dnsapi:dnsapi /etc/dnsapi
+        	chmod 750 /etc/dnsapi
+        fi
+
+        if [ ! -d /var/log/dnsapi ] ; then
+        	mkdir /var/log/dnsapi
+        	chown dnsapi:dnsapi /var/log/dnsapi
+        	chmod 750 /var/log/dnsapi
+        fi
+	;;
+esac
+
+#DEBHELPER#
