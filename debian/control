@@ -1,0 +1,18 @@
+Source: dns-api
+Section: java
+Priority: optional
+Maintainer: Maximilian Falkenstein <mfalkenstein@sos.ethz.ch>
+Uploaders: Maximilian Falkenstein <mfalkenstein@sos.ethz.ch>
+Build-Depends: debhelper (>= 11), default-jdk, maven-debian-helper (>= 2.1)
+Standards-Version: 4.2.1
+Vcs-Git: https://git.sos.ethz.ch/k8s/dns-api.git
+Vcs-Browser: https://git.sos.ethz.ch/k8s/dns-api
+Homepage: https://git.sos.ethz.ch/k8s/dns-api
+
+Package: dns-api
+Architecture: all
+Depends: ${misc:Depends}, ${maven:Depends}
+Suggests: ${maven:OptionalDepends}
+Description: dnsapi
+ A GRPC API for creating DNS records via the ETH netcenter.
+

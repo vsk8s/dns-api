@@ -1,0 +1,11 @@
+autoreconf.after
+autoreconf.before
+*.log
+*.substvars
+*.debhelper
+tmp
+.debhelper
+debhelper-build-stamp
+files
+dns-api
+maven-repo

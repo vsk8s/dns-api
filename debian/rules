@@ -1,0 +1,15 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	java -noverify -cp /usr/share/maven/boot/plexus-classworlds-2.x.jar \
+		-Dmaven.home=/usr/share/maven \
+		-Dmaven.multiModuleProjectDirectory=$(shell pwd) \
+		-Dclassworlds.conf=/etc/maven/m2-debian.conf \
+		-Dproperties.file.manual=$(shell pwd)/debian/maven.properties \
+		-Ddebian.dir=$(shell pwd)/debian \
+		-Dmaven.repo.local=$(shell pwd)/debian/maven-repo \
+		org.codehaus.plexus.classworlds.launcher.Launcher \
+		package -DskipTests -Dnotimestamp=true -Dlocale=en_US

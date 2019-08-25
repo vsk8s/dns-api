@@ -1,0 +1,3 @@
+
+ch.ethz.vis dnsapi jar * * *
+ch.ethz.vis dnsapi jar s/.*/debian/ * *
