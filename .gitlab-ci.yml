@@ -1,6 +1,7 @@
 ---
 variables:
-  DISTRIBUTION_VER: "stretch"
+  DISTRIBUTION_VER: "buster"
+  CI_APT_PREFIX: "k8s-1.15"
 
 image: docker.git.sos.ethz.ch/isg/debian-ci-base-int:$DISTRIBUTION_VER
 
@@ -27,8 +28,6 @@ build-package:
     - apt update || /bin/true
     - apt install -y --no-install-recommends maven-debian-helper maven || /bin/true
   script:
-    - export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-    - export JRE_HOME=/usr/lib/jvm/java-11-openjdk-amd64
     - dpkg-buildpackage -b -us -uc
     - mkdir debbuild
     - mv ../*.deb debbuild/
