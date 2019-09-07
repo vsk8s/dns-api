@@ -26,6 +26,6 @@ jobs:
             mkdir -p ~/test-results/junit/
             find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} ~/test-results/junit/ \;
           when: always
-            - store_test_results:
-                path: ~/test-results
+      - store_test_results:
+          path: ~/test-results
       - run: bash <(curl -s https://codecov.io/bash)
