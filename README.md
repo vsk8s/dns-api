@@ -1,5 +1,9 @@
 # DNS API
 
+[![Build Status](https://img.shields.io/circleci/build/github/vsk8s/dns-api?style=flat)](https://circleci.com/gh/vsk8s/dns-api)
+[![codecov](https://codecov.io/gh/vsk8s/dns-api/branch/master/graph/badge.svg)](https://codecov.io/gh/vsk8s/dns-api)
+[![Release](https://img.shields.io/github/tag/vsk8s/dns-api.svg?style=flat)](https://github.com/vsk8s/dns-api/releases/latest)
+
 A GRPC API for creating DNS records via the ETH netcenter.
 
 # Configuration
