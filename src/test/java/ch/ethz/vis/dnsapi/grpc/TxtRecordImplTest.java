@@ -200,8 +200,7 @@ public class TxtRecordImplTest extends DnsImplBase {
     private Dnsapi.CreateTxtRecordRequest.Builder defaultCreateTxtRecordRequest() {
         return Dnsapi.CreateTxtRecordRequest.newBuilder()
                 .setValue(VALUE)
-                .setTxtName(TXT_NAME)
-                .setSubdomain(DEFAULT_SUBDOMAIN);
+                .setDomain(TXT_NAME + "." + DEFAULT_SUBDOMAIN);
     }
 
     private Dnsapi.DeleteTxtRecordRequest.Builder defaultDeleteTxtRecordRequest() {

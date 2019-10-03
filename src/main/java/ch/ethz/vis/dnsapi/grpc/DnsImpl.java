@@ -6,6 +6,7 @@ import ch.ethz.vis.dnsapi.netcenter.dto.*;
 import ch.ethz.vis.dnsapi.util.SupplierWithExceptions;
 import io.grpc.Status;
 import io.grpc.StatusException;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import okhttp3.ResponseBody;
 import org.apache.logging.log4j.LogManager;
@@ -13,9 +14,7 @@ import org.apache.logging.log4j.Logger;
 import retrofit2.Response;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DnsImpl extends DnsImplBase {
@@ -32,18 +31,22 @@ public class DnsImpl extends DnsImplBase {
 
     private final String defaultIsg;
 
-    public DnsImpl(NetcenterAPI netcenterAPI, String defaultIsg) {
+    private final List<String> dnsZones;
+
+    public DnsImpl(NetcenterAPI netcenterAPI, String defaultIsg, List<String> dnsZones) {
         this.netcenterAPI = netcenterAPI;
         this.defaultIsg = defaultIsg;
+        this.dnsZones = dnsZones;
     }
 
     @Override
     public void createARecord(Dnsapi.CreateARecordRequest request, StreamObserver<Dnsapi.EmptyResponse> responseObserver) {
         LOG.debug("Got createARecord request");
+        DnsName splittedName = splitOffZone(request.getDomain());
         doRequest(responseObserver,
                 () -> createARecord(request.getIp(),
-                        request.getIpName(),
-                        request.getSubdomain(),
+                        splittedName.name,
+                        splittedName.domain,
                         request.getOptions()));
         LOG.debug("Successfully handled createARecord request");
     }
@@ -55,10 +58,12 @@ public class DnsImpl extends DnsImplBase {
 
     @Override
     public void createCNameRecord(Dnsapi.CreateCNameRecordRequest request, StreamObserver<Dnsapi.EmptyResponse> responseObserver) {
+        LOG.debug("Got createCNameRecord request");
+        DnsName splittedName = splitOffZone(request.getDomain());
         doRequest(responseObserver,
                 () -> createCNameRecord(request.getHostname(),
-                        request.getAliasName(),
-                        request.getSubdomain(),
+                        splittedName.name,
+                        splittedName.domain,
                         request.getOptions()));
     }
 
@@ -69,9 +74,12 @@ public class DnsImpl extends DnsImplBase {
 
     @Override
     public void createTxtRecord(Dnsapi.CreateTxtRecordRequest request, StreamObserver<Dnsapi.EmptyResponse> responseObserver) {
+        LOG.debug("Got createTxtameRecord request");
+        DnsName splittedName = splitOffZone(request.getDomain());
         doRequest(responseObserver,
-                () -> createTxtRecord(request.getTxtName(),
-                        request.getSubdomain(),
+                () -> createTxtRecord(
+                        splittedName.name,
+                        splittedName.domain,
                         request.getValue(),
                         request.getOptions()));
     }
@@ -301,5 +309,28 @@ public class DnsImpl extends DnsImplBase {
             LOG.error("Unexpected", e);
             throw new StatusException(Status.INTERNAL.withDescription("error relaying request to API"));
         }
+    }
+
+    DnsName splitOffZone(String name) {
+        Optional<String> domain = dnsZones.stream()
+                .filter(name::endsWith)
+                .max(Comparator.comparingInt(String::length));
+
+        if (domain.isEmpty()) {
+            LOG.error("Requested record for name '" + name + "', but no zone is configured for it");
+            throw new StatusRuntimeException(Status.INVALID_ARGUMENT);
+        } else {
+            DnsName result = new DnsName();
+            result.domain = domain.get();
+            result.name = name.replaceAll("\\." + result.domain + "$", "");
+            return result;
+        }
+    }
+
+    static final class DnsName {
+
+        public String name;
+
+        public String domain;
     }
 }

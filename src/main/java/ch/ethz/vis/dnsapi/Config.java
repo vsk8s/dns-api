@@ -4,6 +4,8 @@ import ch.ethz.vis.dnsapi.exceptions.InitializationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 public class Config {
@@ -20,6 +22,8 @@ public class Config {
 
     private static final String CERT_FILE_PATH = "ch.ethz.vis.dnsapi.certFilePath";
 
+    private static final String DNS_ZONES_KEY = "ch.ethz.vis.dnsapi.dnsZones";
+
     private String username;
 
     private String password;
@@ -29,6 +33,8 @@ public class Config {
     private String keyFilePath;
 
     private String certFilePath;
+
+    private List<String> dnsZones;
 
     public Config(Properties p) throws InitializationException {
         readProperties(p);
@@ -44,6 +50,10 @@ public class Config {
 
     public String getIsgGroup() {
         return isgGroup;
+    }
+
+    public List<String> getDnsZones() {
+        return dnsZones;
     }
 
     public String getKeyFilePath() {
@@ -66,6 +76,7 @@ public class Config {
         this.isgGroup = p.getProperty(NETCENTER_ISGGROUP_KEY);
         this.keyFilePath = p.getProperty(KEY_FILE_PATH);
         this.certFilePath = p.getProperty(CERT_FILE_PATH);
+        this.dnsZones = Arrays.asList(p.getProperty(DNS_ZONES_KEY).split(","));
     }
 
     private void checkConfigurationValidity() throws InitializationException {
@@ -74,6 +85,7 @@ public class Config {
         checkConfigValue(isgGroup, "isgGroup");
         checkConfigValue(keyFilePath, "keyFilePath");
         checkConfigValue(certFilePath, "certFilePath");
+        checkConfigValue(dnsZones, "dnsZones");
     }
 
     private void checkConfigValue(Object value, String name) throws InitializationException {

@@ -88,8 +88,7 @@ public class CNameRecordImplTest extends DnsImplBase {
     private Dnsapi.CreateCNameRecordRequest.Builder defaultCreateCNameRecordRequest() {
         return Dnsapi.CreateCNameRecordRequest.newBuilder()
                 .setHostname(HOST_NAME)
-                .setAliasName(ALIAS_NAME)
-                .setSubdomain(DEFAULT_SUBDOMAIN);
+                .setDomain(ALIAS_NAME + "." + DEFAULT_SUBDOMAIN);
     }
 
     private Dnsapi.DeleteCNameRecordRequest.Builder defaultDeleteCNameRecordRequest() {

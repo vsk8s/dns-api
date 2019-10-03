@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class GrpcServer {
 
@@ -37,16 +38,16 @@ public class GrpcServer {
         this.defaultIsg = defaultIsg;
     }
 
-    public void serve() throws IOException {
-        server = instantiateServer();
+    public void serve(List<String> dnsZones) throws IOException {
+        server = instantiateServer(dnsZones);
         server.start();
         joinServer();
     }
 
-    private Server instantiateServer() {
+    private Server instantiateServer(List<String> dnsZones) {
         return NettyServerBuilder.forPort(port)
                 .useTransportSecurity(new File(certFilePath), new File(keyFilePath))
-                .addService(new DnsImpl(netcenterAPI, defaultIsg))
+                .addService(new DnsImpl(netcenterAPI, defaultIsg, dnsZones))
                 .addService(ProtoReflectionService.newInstance())
                 .build();
     }

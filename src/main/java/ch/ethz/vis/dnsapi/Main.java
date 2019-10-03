@@ -34,7 +34,7 @@ public class Main {
         GrpcServer s = instantiateServer(config);
 
         LOG.info("Completed startup");
-        s.serve();
+        s.serve(config.getDnsZones());
     }
 
     private static Config loadConfiguration() throws IOException, InitializationException {

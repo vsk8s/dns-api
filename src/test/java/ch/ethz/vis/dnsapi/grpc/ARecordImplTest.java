@@ -89,8 +89,7 @@ public class ARecordImplTest extends DnsImplBase {
     private Dnsapi.CreateARecordRequest.Builder defaultCreateARecordRequest() {
         return Dnsapi.CreateARecordRequest.newBuilder()
                 .setIp(IP)
-                .setIpName(IP_NAME)
-                .setSubdomain(DEFAULT_SUBDOMAIN);
+                .setDomain(IP_NAME + "." + DEFAULT_SUBDOMAIN);
     }
 
     private Dnsapi.DeleteARecordRequest.Builder defaultDeleteARecordRequest() {
