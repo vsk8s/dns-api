@@ -1,3 +1,10 @@
+dns-api (2.0) unstable; urgency=medium
+
+  * Take a full domain instead of splitted name from clients and perform DNS
+    zone lookup in the dns-api
+
+ -- Jan Veen <veenj@vis.ethz.ch>  Thu, 03 Oct 2019 16:20:20 +0200
+
 dns-api (1.0-SNAPSHOT-2) unstable; urgency=medium
 
   * Fix java 11 runtime dependency
