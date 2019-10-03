@@ -81,7 +81,7 @@
                     <descriptors>
                         <descriptor>src/main/resources/jar-assembly.xml</descriptor>
                     </descriptors>
-                    <finalName>dnsapi-1.0-SNAPSHOT</finalName>
+                    <finalName>dnsapi-${version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
